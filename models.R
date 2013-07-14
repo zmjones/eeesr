@@ -131,10 +131,3 @@ PlotImp(ciri.imp[[3]], "Political Imprisonment, Variable Importance", "polpris-i
 PlotImp(ciri.imp[[4]], "Torture, Variable Importance", "tort-imp")
 PlotImp(physint.imp, "Physical Integrity Index, Variable Importance", "physint-imp")
 PlotImp(pts.imp, "Political Terror Scale, Variable Importance", "pts-imp")
-
-
-
-
-
-
-
