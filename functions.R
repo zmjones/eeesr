@@ -1,14 +1,14 @@
 require(plyr)
+require(stringr)
 require(lubridate)
+require(ggplot2)
+require(grid)
 require(countrycode)
 require(foreign)
 require(rms)
-require(multicore)
-require(ggplot2)
-require(grid)
-require(stringr)
-require(party)
 options(showprogress = FALSE)
+require(multicore)
+require(party)
 
 CVrms <- function(response, input, B, R, model) {
   cv <- vector("numeric", R)
@@ -30,10 +30,8 @@ Frms <- function(response, input, model, var) {
   else if (model == "ols")
     fit <- ols(response ~ input)
   else break
-
   beta <- coef(fit)
   se <- sqrt(diag(vcov(fit)))
-  
   if (is.factor(get(gsub("log\\(|\\)", "", var), df)))
     return(c(beta[grepl(var, names(beta))], se[grepl(var, names(se))]))
   else
@@ -48,7 +46,7 @@ CleanAll <- function(x, vars) {
 
 CleanCV <- function(cv) {
   cv <- as.data.frame(t(apply(cv, 1, function(x)
-                                   quantile(x, probs = c(.025, .5, .975)))))
+                      quantile(x, probs = c(.025, .5, .975)))))
   colnames(cv) <- c("lwr", "median", "upr")
   cv$spec <- row.names(cv)
   row.names(cv) <- NULL
@@ -56,10 +54,9 @@ CleanCV <- function(cv) {
 }
 
 CallCV <- function(specs, depvar, mtype, rnames) {
-  cv <- t(as.data.frame(mclapply(specs, function(x)
-        CVrms(depvar, model.matrix(as.formula(x), df)[, -1],
-              10, 100, model = mtype), mc.cores = 8)))
-  cv <- CleanCV(cv)
+  cv <- CleanCV(t(as.data.frame(mclapply(specs, function(x)
+                CVrms(depvar, model.matrix(as.formula(x), df)[, -1],
+                      10, 100, model = mtype), mc.cores = 8))))
   cv$spec <- rnames
   return(cv)
 }
