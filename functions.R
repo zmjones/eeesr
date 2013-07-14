@@ -8,6 +8,7 @@ require(ggplot2)
 require(grid)
 require(stringr)
 require(party)
+options(showprogress = FALSE)
 
 CVrms <- function(response, input, B, R, model) {
   cv <- vector("numeric", R)
