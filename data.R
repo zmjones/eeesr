@@ -1,10 +1,9 @@
 rm(list = ls())
-
 source("functions.R")
 
 cat <- read.csv("./data/cat.csv")[, c(1:2,6)]
 cpr <- read.csv("./data/cpr.csv")[, c(1:2,6)]
-cat$ccode <- countrycode(cat$participant, "country.name", "cown") #serbia is getting dropped here
+cat$ccode <- countrycode(cat$participant, "country.name", "cown")
 cpr$ccode <- countrycode(cpr$participant, "country.name", "cown")
 names(cat)[3] <- "cat_ratify"
 names(cpr)[3] <- "cpr_ratify"
@@ -13,9 +12,8 @@ cpr$participant <- NULL
 
 paradox <- read.delim("./data/paradox_rep.tab")
 paradox <- paradox[paradox$year >= 1981, ]
-
 paradox$country[paradox$country == "United Arab Emirat"] = "United Arab Emirates"
-paradox$ccode <- countrycode(paradox$country, "country.name", "cown") #no mismatches from 'warn'
+paradox$ccode <- countrycode(paradox$country, "country.name", "cown")
 names(paradox) <- tolower(names(paradox))
 paradox <- paradox[, -1]
 
@@ -45,11 +43,6 @@ acd <- read.csv("./data/acd.csv")[, c(21,10,13,11:12)]
 names(acd) <- c("ccode", "year", "type", "int", "cumint")
 acd <- na.omit(acd[acd$year >= 1981 & acd$year <= 1999, ])
 
-#what variables do we need from this?
-#md <- read.dta("./data/murdie_davis.dta")[, c(1:2,16,21,152)]
-#md <- na.omit(md[md$year >= 1981 & md$year <= 1999, ])
-#names(md) <- c("year", "ccode", "md_gcnc", "md_sec", "md_ln_fill")
-
 oil <- read.dta("./data/oil_hr.dta")[, c(1,5,129)]
 names(oil) <- tolower(names(oil))
 oil <- na.omit(oil[oil$year >= 1981 & oil$year <= 1999, ])
@@ -67,7 +60,7 @@ dpi$countryname[dpi$countryname == "PRK"] = "People's Republic of Korea"
 dpi$countryname[dpi$countryname == "S. Africa"] = "South Africa"
 dpi$ccode <- countrycode(dpi$countryname, "country.name", "cown")
 dpi <- na.omit(dpi[dpi$year >= 1981 & dpi$year <= 1999, -1])
-dpi[is.na(dpi$military), ] = 0 #there are 9 NAs, recoding appropriate?
+dpi[is.na(dpi$military), ] = 0 
 
 hill_isq <- read.dta("./data/hill_isq_rep.dta")[, c(3,2,10:11,17)]
 names(hill_isq)[1] <- "ccode"
@@ -106,7 +99,6 @@ df <- join(df, pts, type = "left")
 df <- join(df, polcon, type = "left")
 df <- join(df, exgdp, type = "left")
 df <- join(df, acd, type = "left")
-#df <- join(df, md, type = "left")
 df <- join(df, oil, type = "left")
 df <- join(df, dpi, type = "left")
 df <- join(df, hill_isq, type = "left")
@@ -132,16 +124,8 @@ df$iwar <- ifelse(df$type == 2 & df$cumint == 1, 1, 0)
 df$rentspc <- log(df$rentspc + 1)
 df$execrlc[df$exerclc == -999] <- NA
 
-rm(paradox, polity, ciri, polcon, pts, exgdp, acd, oil, dpi,
-   hill_isq, civ_libs, soe_jud, wb, a_cbook, mitch, sb, cat, cpr, youth)
-
 df <- aggregate(df, by = list(df$ccode, df$year), max)[, -c(1:2)]
-
 df <- ddply(df, .(ccode), transform, ainr_lag = c(NA, ainr[-length(ainr)]),
             aibr_lag = c(NA, aibr[-length(aibr)]), avmdia_lag = c(NA, avmdia[-length(avmdia)]))
-
-#nrow(df) == 3443
-#nrow(df[!(is.na(df$physint)), ]) == 2625 
 df <- df[!is.na(df$physint), -c(16,19:21,25:27)]
-
 write.csv(df, "./data/rep.csv", row.names = FALSE)
