@@ -13,7 +13,8 @@ df$pop <- log(df$pop)
 df.save <- df
 df <- na.omit(df)
 
-ciri.vars <- c("disap", "kill", "polpris", "tort")
+lrm.vars <- c("disap", "kill", "polpris", "tort", "amnesty")
+ols.vars <- c("physint", "amnesty")
 base.spec <- "~ log(gdppc) + log(pop)"
 ivars <- colnames(df)[!colnames(df) %in% c("ccode", "year", ciri.vars, "physint", "amnesty",
                                            "gdppc", "pop")]
@@ -29,10 +30,10 @@ ivar.labels <- c("INGOs", "Polity", "Executive Compet.", "Executive Open.",
                  "AI Press (lag)", "AI Background (lag)", "Western Media (lag)")
 ivar.labels.cwar <- ivar.labels[!(ivar.labels %in% "Civil War")]
 
-all.lrm <- lapply(c(ciri.vars, "amnesty"), function(x) lapply(specs.cwar, function(y)
+all.lrm <- lapply(lrm.vars, function(x) lapply(specs.cwar, function(y)
                   Frms(df[, x], model.matrix(as.formula(y), df)[, -1],
                   model = "lrm", var = str_extract(y, "\\b[a-z|_|(|)|0-9]+$"))))
-all.ols <- lapply(c("physint", "amnesty"), function(x) lapply(specs.cwar, function(y)
+all.ols <- lapply(ols.vars, function(x) lapply(specs.cwar, function(y)
                   Frms(df[, x], model.matrix(as.formula(y), df)[, -1],
                   model = "ols", var = str_extract(y, "\\b[a-z|_|(|)|0-9]+$"))))
 all <- c(all.lrm, all.ols)
@@ -48,13 +49,13 @@ PlotAll(all[[7]], "all-pts-ols", "Political Terror Scale, All Data (OLS)")
 
 specs <- c("~ gdppc + pop", specs)
 specs.cwar <- c("~ gdppc + pop + cwar", specs.cwar)
-cv.lrm <- lapply(c(ciri.vars, "amnesty"), function(x) CallCV(specs, df[, x], "lrm",
+cv.lrm <- lapply(lrm.vars, function(x) CallCV(specs, df[, x], "lrm",
                  c("log GDP per cap. + log Pop.", ivar.labels)))
-cv.lrm.cwar <- lapply(c(ciri.vars, "amnesty"), function(x) CallCV(specs.cwar, df[, x], "lrm",
+cv.lrm.cwar <- lapply(lrm.vars, function(x) CallCV(specs.cwar, df[, x], "lrm",
                       c("log GDP per cap. + log Pop. + Civil War", ivar.labels.cwar)))
-cv.ols <- lapply(c("physint", "amnesty"), function(x) CallCV(specs, df[, x], "ols",
+cv.ols <- lapply(ols.vars, function(x) CallCV(specs, df[, x], "ols",
                  c("log GDP per cap. + log Pop.", ivar.labels)))
-cv.ols.cwar <- lapply(c("physint", "amnesty"), function(x) CallCV(specs.cwar, df[, x], "ols",
+cv.ols.cwar <- lapply(ols.vars, function(x) CallCV(specs.cwar, df[, x], "ols",
                       c("log GDP per cap. + log Pop. + Civil War", ivar.labels.cwar)))
 cv <- c(cv.lrm, cv.lrm.cwar, cv.ols, cv.ols.cwar)
 dxy.lab <- expression(D[xy])
@@ -74,7 +75,7 @@ PlotCV(cv[[13]], "cv-cwar-physint", "Physical Integrity Index (OLS)", "RMSE")
 PlotCV(cv[[14]], "cv-cwar-pts-ols", "Physical Integrity Index (OLS)", "RMSE")
 
 df <- df.save[!(is.na(df.save$amnesty) | is.na(df.save$physint)), ]
-imp <- mclapply(c(ciri.vars, "physint", "amnesty"), function(x)
+imp <- mclapply(lrm.vars, function(x)
                 varimp(cforest(as.formula(paste0(x, "~", paste0(ivars, collapse = "+"))),
                 data = df)), mc.cores = CORES)
 PlotImp(imp[[1]], "Disappearances, Variable Importance", "disap-imp", ivar.labels)
