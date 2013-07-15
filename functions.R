@@ -67,7 +67,7 @@ PlotCV <- function(df, file.prefix, title, ylab) {
   else
     df$base <- df[1, "lwr"]
   df$spec <- reorder(df$spec, df$median)
-  df$pos <- grep("gdppc", levels(df$spec))
+  df$pos <- grep("log GDP per cap\\.", levels(df$spec))
   p <- ggplot(data = df, aes(x = spec, y = median, group = spec))
   p <- p + geom_point()
   p <- p + geom_errorbar(aes(y = median, ymin = lwr, ymax = upr), width = .25)
@@ -91,8 +91,8 @@ PlotAll <- function(df, file.prefix, title) {
   ggsave(paste0("figures/", file.prefix, ".png"), plot = p, width = 6, height = 6)
 }
 
-PlotImp <- function(var.imp, title, file.prefix) {
-  df <- data.frame("var" = names(var.imp), "imp" = var.imp)
+PlotImp <- function(var.imp, title, file.prefix, rnames) {
+  df <- data.frame("var" = rnames, "imp" = var.imp)
   df$var <- reorder(df$var, df$imp)
   p <- ggplot(data = df, aes(x = factor(var), y = imp))
   p <- p + geom_bar(stat = "identity")
