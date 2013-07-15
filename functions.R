@@ -56,7 +56,7 @@ CleanCV <- function(cv) {
 CallCV <- function(specs, depvar, mtype, rnames) {
   cv <- CleanCV(t(as.data.frame(mclapply(specs, function(x)
                 CVrms(depvar, model.matrix(as.formula(x), df)[, -1],
-                      10, 100, model = mtype), mc.cores = CORES))))
+                      10, 500, model = mtype), mc.cores = CORES))))
   cv$spec <- rnames
   return(cv)
 }
