@@ -12,7 +12,7 @@ cpr$participant <- NULL
 
 paradox <- read.delim("./data/paradox_rep.tab")
 paradox <- paradox[paradox$year >= 1981, ]
-paradox$country[paradox$country == "United Arab Emirat"] = "United Arab Emirates"
+paradox$country[paradox$country == "United Arab Emirat"] <- "United Arab Emirates"
 paradox$ccode <- countrycode(paradox$country, "country.name", "cown")
 names(paradox) <- tolower(names(paradox))
 paradox <- paradox[, -1]
@@ -49,18 +49,18 @@ oil <- na.omit(oil[oil$year >= 1981 & oil$year <= 1999, ])
 names(oil)[3] <- "rentspc"
 
 dpi <- read.dta("./data/dpi.dta")[, c(1,3,9,15)]
-dpi$countryname[dpi$countryname == "UAE"] = "United Arab Emirates"
-dpi$countryname[dpi$countryname == "Cent. Af. Rep."] = "Central African Republic"
-dpi$countryname[dpi$countryname == "PRC"] = "People's Republic of China"
-dpi$countryname[dpi$countryname == "GDR"] = "German Democratic Republic"
-dpi$countryname[dpi$countryname == "Dom. Rep."] = "Dominican Republic"
-dpi$countryname[dpi$countryname == "ROK"] = "Republic of Korea"
-dpi$countryname[dpi$countryname == "P. N. Guinea"] = "Papua New Guinea"
-dpi$countryname[dpi$countryname == "PRK"] = "People's Republic of Korea"
-dpi$countryname[dpi$countryname == "S. Africa"] = "South Africa"
+dpi$countryname[dpi$countryname == "UAE"] <- "United Arab Emirates"
+dpi$countryname[dpi$countryname == "Cent. Af. Rep."] <- "Central African Republic"
+dpi$countryname[dpi$countryname == "PRC"] <- "People's Republic of China"
+dpi$countryname[dpi$countryname == "GDR"] <- "German Democratic Republic"
+dpi$countryname[dpi$countryname == "Dom. Rep."] <- "Dominican Republic"
+dpi$countryname[dpi$countryname == "ROK"] <- "Republic of Korea"
+dpi$countryname[dpi$countryname == "P. N. Guinea"] <- "Papua New Guinea"
+dpi$countryname[dpi$countryname == "PRK"] <- "People's Republic of Korea"
+dpi$countryname[dpi$countryname == "S. Africa"] <- "South Africa"
 dpi$ccode <- countrycode(dpi$countryname, "country.name", "cown")
 dpi <- na.omit(dpi[dpi$year >= 1981 & dpi$year <= 1999, -1])
-dpi[is.na(dpi$military), ] = 0 
+dpi[is.na(dpi$military), ] <- 0 
 
 hill_isq <- read.dta("./data/hill_isq_rep.dta")[, c(3,2,10:11,17)]
 names(hill_isq)[1] <- "ccode"
