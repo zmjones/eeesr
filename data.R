@@ -122,6 +122,7 @@ df$ingo_uia <- log(df$ingo_uia + 1)
 df$cwar <- ifelse((df$type == 3 | df$type == 4) & df$cumint == 1, 1, 0)
 df$iwar <- ifelse(df$type == 2 & df$cumint == 1, 1, 0)
 df$rentspc <- log(df$rentspc + 1)
+df$trade_gdp <- log(df$trade_gdp)
 df$execrlc[df$exerclc == -999] <- NA
 
 df <- aggregate(df, by = list(df$ccode, df$year), max)[, -c(1:2)]

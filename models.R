@@ -21,9 +21,9 @@ ivars <- colnames(df)[!colnames(df) %in% c("ccode", "year", ciri.vars,
                                            "physint", "amnesty", "gdppc", "pop")]
 specs <- paste0("~ gdppc + pop + ", ivars)
 specs.cwar <- paste0("~ gdppc + pop + cwar + ", ivars[!(ivars %in% "cwar")])
-ivar.labels <- c("INGOs", "Polity", "Executive Compet.", "Executive Open.",
+ivar.labels <- c("log INGOs", "Polity", "Executive Compet.", "Executive Open.",
                  "Executive Const.", "Participation Compet.", "Judicial Indep.",
-                 "Oil Rents", "Military Regime", "Left Executive", "Trade/GDP", "FDI",
+                 "log Oil Rents", "Military Regime", "Left Executive", "log Trade/GDP", "FDI",
                  "Public Trial", "Fair Trial", "Court Decision Final", "Legislative Approval",
                  "WB/IMF Structural Adj.", "IMF Structural Adj.", "WB Structural Adj.",
                  "British Colony", "Common Law", "PTA w/ HR Clause", "CAT Ratifier",
