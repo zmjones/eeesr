@@ -31,6 +31,17 @@ ivar.labels <- c("INGOs", "Polity", "Executive Compet.", "Executive Open.",
                  "AI Press (lag)", "AI Background (lag)", "Western Media (lag)")
 ivar.labels.cwar <- ivar.labels[!(ivar.labels %in% "Civil War")]
 
+plot.df <- df[, !colnames(df) %in% c("ccode", "year", ciri.vars,
+                                     "physint", "amnesty", "gdppc", "pop")]
+colnames(plot.df) <- ivar.labels
+p <- ggplot(data = melt(cor(plot.df)), aes(x = Var1, y = Var2, fill = value))
+p <- p + geom_tile()
+p <- p + scale_fill_gradient2(space = "Lab", name = "Correlation")
+p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+p <- p + guides(fill = guide_colorbar(barwidth = .75, ticks = FALSE))
+p <- p + labs(x = NULL, y = NULL, title = "Covariate Correlations")
+ggsave("./figures/cor-cov.png", plot = p, width = 8, height = 8)
+
 all.lrm <- lapply(lrm.vars, function(x) lapply(specs.cwar, function(y)
                   Frms(df[, x], model.matrix(as.formula(y), df)[, -1],
                   model = "lrm", var = str_extract(y, "\\b[a-z|_|(|)|0-9]+$"))))
