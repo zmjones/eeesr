@@ -34,6 +34,8 @@ ivar.labels.cwar <- ivar.labels[!(ivar.labels %in% "Civil War")]
 plot.df <- df[, !colnames(df) %in% c("ccode", "year", ciri.vars,
                                      "physint", "amnesty", "gdppc", "pop")]
 colnames(plot.df) <- ivar.labels
+max.cor <- apply(apply(cor(plot.df), 1, function(x) ifelse(x == 1, NA, x)), 1,
+                 function(x) max(x, na.rm = TRUE))
 p <- ggplot(data = melt(cor(plot.df)), aes(x = Var1, y = Var2, fill = value))
 p <- p + geom_tile()
 p <- p + scale_fill_gradient2(space = "Lab", name = "Correlation")
@@ -41,6 +43,14 @@ p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 p <- p + guides(fill = guide_colorbar(barwidth = .75, ticks = FALSE))
 p <- p + labs(x = NULL, y = NULL, title = "Covariate Correlations")
 ggsave("./figures/cor-cov.png", plot = p, width = 8, height = 8)
+plot.df <- data.frame("var" = names(max.cor), "cor" = max.cor)
+plot.df$var <- reorder(plot.df$var, plot.df$cor)
+p <- ggplot(data = plot.df, aes(x = factor(var), y = cor))
+p <- p + geom_bar(stat = "identity")
+p <- p + labs(x = "Variable", y = "Maximum Correlation")
+p <- p + coord_flip() + theme_bw()
+p <- p + theme(plot.margin = unit(c(.1, .1, .1, .1), "in"))
+ggsave("./figures/max-cor.png", plot = p, width = 6, height = 6)
 
 all.lrm <- lapply(lrm.vars, function(x) lapply(specs.cwar, function(y)
                   Frms(df[, x], model.matrix(as.formula(y), df)[, -1],
