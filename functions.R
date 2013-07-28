@@ -108,6 +108,7 @@ PlotPval <- function(pval, title, file.prefix, rnames) {
   df$var <- reorder(df$var, df$pval)
   p <- ggplot(data = df, aes(x = factor(var), y = pval))
   p <- p + geom_point()
+  p <- p + geom_hline(y = .05, linetype = "dashed")
   p <- p + labs(x = "Variable", y = "P-Value", title = title)
   p <- p + coord_flip() + theme_bw()
   p <- p + theme(plot.margin = unit(c(.1, .1, .1, .1), "in"))
