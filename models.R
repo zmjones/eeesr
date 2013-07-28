@@ -119,3 +119,16 @@ PlotPval(pval[[3]], "Political Imprisonment, P-Values", "polpris-pval", ivar.lab
 PlotPval(pval[[4]], "Torture, P-Values", "tort-pval", ivar.labels)
 PlotPval(pval[[5]], "Political Terror Scale, P-Values", "pts-pval", ivar.labels)
 PlotPval(pval[[6]], "Physical Integrity Index, P-Values", "physint-pval", ivar.labels)
+
+PlotImp(imp[[1]], "Disappearances, Importance and Stat. Significance",
+        "disap-imp-sig", ivar.labels, pval[[1]])
+PlotImp(imp[[2]], "Killings, Importance and Stat. Significance",
+        "kill-imp-sig", ivar.labels, pval[[2]])
+PlotImp(imp[[3]], "Political Imprisonment, Importance and Stat. Significance",
+        "polpris-imp-sig", ivar.labels, pval[[3]])
+PlotImp(imp[[4]], "Torture, Importance and Stat. Significance",
+        "tort-imp-sig", ivar.labels, pval[[4]])
+PlotImp(imp[[5]], "Political Terror Scale, Importance and Stat. Significance",
+        "pts-imp-sig", ivar.labels, pval[[5]])
+PlotImp(imp[[6]], "Physical Integrity Index, Importance and Stat. Significance",
+        "physint-imp-sig", ivar.labels, pval[[6]])

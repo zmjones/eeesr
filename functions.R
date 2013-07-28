@@ -92,10 +92,19 @@ PlotAll <- function(df, file.prefix, title) {
   ggsave(paste0("figures/", file.prefix, ".png"), plot = p, width = 6, height = 6)
 }
 
-PlotImp <- function(var.imp, title, file.prefix, rnames) {
-  df <- data.frame("var" = rnames, "imp" = var.imp)
+PlotImp <- function(var.imp, title, file.prefix, rnames, pval) {
+  if (!is.null(pval)) {
+    df <- data.frame("var" = rnames, "imp" = var.imp,
+                     "sig" = factor(ifelse(pval <= .05, "yes", "no"), levels = c("yes", "no")))
+    p <- ggplot(data = df, aes(x = factor(var), y = imp, fill = sig))
+    p <- p + scale_fill_grey(name = expression(p < .05))
+  }
+  else {
+    df <- data.frame("var" = rnames, "imp" = var.imp)
+    p <- ggplot(data = df, aes(x = factor(var), y = imp))
+  }
+    
   df$var <- reorder(df$var, df$imp)
-  p <- ggplot(data = df, aes(x = factor(var), y = imp))
   p <- p + geom_bar(stat = "identity")
   p <- p + labs(x = "Variable", y = "Importance", title = title)
   p <- p + coord_flip() + theme_bw()
