@@ -4,10 +4,12 @@ CORES <- 8
 source("functions.R")
 
 df <- read.csv("./data/rep.csv")
-df$disap <- factor(df$disap)
-df$kill <- factor(df$kill)
-df$polpris <- factor(df$polpris)
-df$tort <- factor(df$tort)
+df$disap <- as.ordered(df$disap)
+df$kill <- as.ordered(df$kill)
+df$tort <- as.ordered(df$tort)
+df$polpris <- as.ordered(df$polpris)
+df$physint <- as.ordered(df$physint)
+df$amnesty <- as.ordered(df$amnesty)
 df$gdppc <- log(df$gdppc)
 df$pop <- log(df$pop)
 df.save <- df[!(is.na(df$amnesty) | is.na(df$physint)), ]
@@ -56,7 +58,7 @@ all.lrm <- lapply(lrm.vars, function(x) lapply(specs.cwar, function(y)
                   Frms(df[, x], model.matrix(as.formula(y), df)[, -1],
                   model = "lrm", var = str_extract(y, "\\b[a-z|_|(|)|0-9]+$"))))
 all.ols <- lapply(ols.vars, function(x) lapply(specs.cwar, function(y)
-                  Frms(df[, x], model.matrix(as.formula(y), df)[, -1],
+                  Frms(as.integer(df[, x]), model.matrix(as.formula(y), df)[, -1],
                   model = "ols", var = str_extract(y, "\\b[a-z|_|(|)|0-9]+$"))))
 all <- c(all.lrm, all.ols)
 all <- lapply(all, function(x) data.frame(do.call(rbind, x)))
@@ -75,9 +77,9 @@ cv.lrm <- lapply(lrm.vars, function(x) CallCV(specs, df[, x], "lrm",
                  c("log GDP per cap. + log Pop.", ivar.labels)))
 cv.lrm.cwar <- lapply(lrm.vars, function(x) CallCV(specs.cwar, df[, x], "lrm",
                       c("log GDP per cap. + log Pop. + Civil War", ivar.labels.cwar)))
-cv.ols <- lapply(ols.vars, function(x) CallCV(specs, df[, x], "ols",
+cv.ols <- lapply(ols.vars, function(x) CallCV(specs, as.integer(df[, x]), "ols",
                  c("log GDP per cap. + log Pop.", ivar.labels)))
-cv.ols.cwar <- lapply(ols.vars, function(x) CallCV(specs.cwar, df[, x], "ols",
+cv.ols.cwar <- lapply(ols.vars, function(x) CallCV(specs.cwar, as.integer(df[, x]), "ols",
                       c("log GDP per cap. + log Pop. + Civil War", ivar.labels.cwar)))
 cv <- c(cv.lrm, cv.lrm.cwar, cv.ols, cv.ols.cwar)
 dxy.lab <- expression(D[xy])
