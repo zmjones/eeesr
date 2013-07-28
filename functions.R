@@ -104,7 +104,7 @@ PlotImp <- function(var.imp, title, file.prefix, rnames) {
 }
 
 PlotPval <- function(pval, title, file.prefix, rnames) {
-  df <- data.frame("var" = rnames, "pval" = pval[, 1])
+  df <- data.frame("var" = rnames, "pval" = pval)
   df$var <- reorder(df$var, df$pval)
   p <- ggplot(data = df, aes(x = factor(var), y = pval))
   p <- p + geom_point()

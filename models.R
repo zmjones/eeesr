@@ -112,7 +112,7 @@ pval <- lapply(c(ciri.vars, ols.vars), function(x) lapply(specs.cwar[-1], functi
                lrm((df[, x] ~ model.matrix(as.formula(y), df)[, -1]))))
 pval <- lapply(pval, function(x) lapply(x, function(y)
                1 - pchisq((y$coefficients / sqrt(diag(y$var)))^2, 1)))
-pval <- lapply(pval, function(x) ldply(x, function(y) y[length(y)]))
+pval <- lapply(pval, function(x) ldply(x, function(y) y[length(y)])[, 1])
 PlotPval(pval[[1]], "Disappearances, P-Values", "disap-pval", ivar.labels.cwar)
 PlotPval(pval[[2]], "Killings, P-Values", "kill-pval", ivar.labels.cwar)
 PlotPval(pval[[3]], "Political Imprisonment, P-Values", "polpris-pval", ivar.labels.cwar)
