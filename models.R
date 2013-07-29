@@ -33,6 +33,9 @@ ivar.labels <- c("log INGOs", "Polity", "Executive Compet.", "Executive Open.",
                  "AI Press (lag)", "AI Background (lag)", "Western Media (lag)")
 ivar.labels.cwar <- ivar.labels[!(ivar.labels %in% "Civil War")]
 
+#how many of the missing cells in x are also missing in y
+## df.mi <- ifelse(is.na(df.save[, ivars]), 1, 0)
+
 plot.df <- df[, !colnames(df) %in% c("ccode", "year", ciri.vars,
                                      "physint", "amnesty", "gdppc", "pop")]
 colnames(plot.df) <- ivar.labels
@@ -101,34 +104,20 @@ PlotCV(cv[[14]], "cv-cwar-pts-ols", "Physical Integrity Index (OLS)", "RMSE")
 imp <- mclapply(c(lrm.vars, "physint"), function(x)
                 varimp(cforest(as.formula(paste0(x, "~", paste0(ivars, collapse = "+"))),
                 data = df.save)), mc.cores = CORES)
-PlotImp(imp[[1]], "Disappearances, Variable Importance", "disap-imp", ivar.labels)
-PlotImp(imp[[2]], "Killings, Variable Importance", "kill-imp", ivar.labels)
-PlotImp(imp[[3]], "Political Imprisonment, Variable Importance", "polpris-imp", ivar.labels)
-PlotImp(imp[[4]], "Torture, Variable Importance", "tort-imp", ivar.labels)
-PlotImp(imp[[5]], "Political Terror Scale, Variable Importance", "pts-imp", ivar.labels)
-PlotImp(imp[[6]], "Physical Integrity Index, Variable Importance", "physint-imp", ivar.labels)
-
-pval <- lapply(c(ciri.vars, ols.vars), function(x) lapply(specs[-1], function(y)
+pval <- lapply(c(ciri.vars, ols.vars), function(x) lapply(specs, function(y)
                lrm((df[, x] ~ model.matrix(as.formula(y), df)[, -1]))))
 pval <- lapply(pval, function(x) lapply(x, function(y)
                1 - pchisq((y$coefficients / sqrt(diag(y$var)))^2, 1)))
 pval <- lapply(pval, function(x) ldply(x, function(y) y[length(y)])[, 1])
-PlotPval(pval[[1]], "Disappearances, P-Values", "disap-pval", ivar.labels)
-PlotPval(pval[[2]], "Killings, P-Values", "kill-pval", ivar.labels)
-PlotPval(pval[[3]], "Political Imprisonment, P-Values", "polpris-pval", ivar.labels)
-PlotPval(pval[[4]], "Torture, P-Values", "tort-pval", ivar.labels)
-PlotPval(pval[[5]], "Political Terror Scale, P-Values", "pts-pval", ivar.labels)
-PlotPval(pval[[6]], "Physical Integrity Index, P-Values", "physint-pval", ivar.labels)
-
-PlotImp(imp[[1]], "Disappearances, Importance and Stat. Significance",
+PlotImp(imp[[1]], "Disappearances, Importance and Significance",
         "disap-imp-sig", ivar.labels, pval[[1]])
-PlotImp(imp[[2]], "Killings, Importance and Stat. Significance",
+PlotImp(imp[[2]], "Killings, Importance and Significance",
         "kill-imp-sig", ivar.labels, pval[[2]])
-PlotImp(imp[[3]], "Political Imprisonment, Importance and Stat. Significance",
+PlotImp(imp[[3]], "Political Imprisonment, Importance and Significance",
         "polpris-imp-sig", ivar.labels, pval[[3]])
-PlotImp(imp[[4]], "Torture, Importance and Stat. Significance",
+PlotImp(imp[[4]], "Torture, Importance and Significance",
         "tort-imp-sig", ivar.labels, pval[[4]])
-PlotImp(imp[[5]], "Political Terror Scale, Importance and Stat. Significance",
+PlotImp(imp[[5]], "Political Terror Scale, Importance and Significance",
         "pts-imp-sig", ivar.labels, pval[[5]])
-PlotImp(imp[[6]], "Physical Integrity Index, Importance and Stat. Significance",
+PlotImp(imp[[6]], "Physical Integrity Index, Importance and Significance",
         "physint-imp-sig", ivar.labels, pval[[6]])

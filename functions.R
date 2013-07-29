@@ -93,32 +93,16 @@ PlotAll <- function(df, file.prefix, title) {
 }
 
 PlotImp <- function(var.imp, title, file.prefix, rnames, pval) {
-  if (!is.null(pval)) {
-    df <- data.frame("var" = rnames, "imp" = var.imp,
-                     "sig" = factor(ifelse(pval <= .05, "yes", "no"), levels = c("yes", "no")))
-    p <- ggplot(data = df, aes(x = factor(var), y = imp, fill = sig))
-    p <- p + scale_fill_grey(name = expression(p < .05))
-  }
-  else {
-    df <- data.frame("var" = rnames, "imp" = var.imp)
-    p <- ggplot(data = df, aes(x = factor(var), y = imp))
-  }
-    
-  df$var <- reorder(df$var, df$imp)
+  sig <- sapply(pval, function(x) if (x <= .01) ".01"
+                else if (x <= .05) ".05" else if (x <= .1) ".1"
+                else "indiscernible")
+  df <- data.frame("var" = rnames, "imp" = var.imp,
+                   "sig" = factor(sig, levels = c(".01", ".05", ".1", "indiscernible")))
+  df$var <- reorder(factor(df$var), df$imp)
+  p <- ggplot(data = df, aes(x = factor(var), y = imp, fill = sig))
+  p <- p + scale_fill_grey(name = "p-value")
   p <- p + geom_bar(stat = "identity")
   p <- p + labs(x = "Variable", y = "Importance", title = title)
-  p <- p + coord_flip() + theme_bw()
-  p <- p + theme(plot.margin = unit(c(.1, .1, .1, .1), "in"))
-  ggsave(paste0("figures/", file.prefix, ".png"), plot = p, width = 6, height = 6)
-}
-
-PlotPval <- function(pval, title, file.prefix, rnames) {
-  df <- data.frame("var" = rnames, "pval" = pval)
-  df$var <- reorder(df$var, df$pval)
-  p <- ggplot(data = df, aes(x = factor(var), y = pval))
-  p <- p + geom_point()
-  p <- p + geom_hline(y = .05, linetype = "dashed")
-  p <- p + labs(x = "Variable", y = "P-Value", title = title)
   p <- p + coord_flip() + theme_bw()
   p <- p + theme(plot.margin = unit(c(.1, .1, .1, .1), "in"))
   ggsave(paste0("figures/", file.prefix, ".png"), plot = p, width = 6, height = 6)
