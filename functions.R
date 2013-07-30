@@ -1,15 +1,8 @@
-require(plyr)
-require(stringr)
-require(lubridate)
-require(ggplot2)
-require(reshape2)
-require(grid)
-require(countrycode)
-require(foreign)
-require(rms)
+pkgs <- c("plyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
+          "countrycode", "foreign", "rms", "multicore", "party")
+invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
+                 install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
 options(showprogress = FALSE)
-require(multicore)
-require(party)
 
 CVrms <- function(response, input, B, R, model) {
   cv <- vector("numeric", R)
