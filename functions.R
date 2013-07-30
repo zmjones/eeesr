@@ -21,7 +21,7 @@ CVrms <- function(response, input, B, R, model) {
     fit <- ols(response ~ input, x = TRUE, y = TRUE)
     for(r in 1:R)
       cv[r] <- sqrt(validate(fit, B, method = "cross")[2, 3])
-  } else break
+  } else stop("Invalid model type.")
   return(cv)
 }
 
@@ -30,7 +30,7 @@ Frms <- function(response, input, model, var) {
     fit <- lrm(response ~ input)
   else if (model == "ols")
     fit <- ols(response ~ input)
-  else break
+  else stop("Invalid model type.")
   beta <- coef(fit)
   se <- sqrt(diag(vcov(fit)))
   if (is.factor(get(gsub("log\\(|\\)", "", var), df)))
