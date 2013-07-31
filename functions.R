@@ -2,6 +2,7 @@ pkgs <- c("plyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
           "countrycode", "foreign", "rms", "multicore", "party")
 invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
                  install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
+invisible(lapply(pkgs, require, character.only = TRUE))
 options(showprogress = FALSE)
 
 CVrms <- function(response, input, B, R, model) {
