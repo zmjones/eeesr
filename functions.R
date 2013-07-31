@@ -51,7 +51,7 @@ CleanCV <- function(cv) {
 CallCV <- function(specs, depvar, mtype, rnames) {
   cv <- CleanCV(t(as.data.frame(mclapply(specs, function(x)
                 CVrms(depvar, model.matrix(as.formula(x), df)[, -1],
-                      10, 500, model = mtype), mc.cores = CORES))))
+                10, 1000, model = mtype), mc.cores = CORES))))
   cv$spec <- rnames
   return(cv)
 }
@@ -87,14 +87,12 @@ PlotAll <- function(df, file.prefix, title) {
 }
 
 PlotImp <- function(var.imp, title, file.prefix, rnames, pval) {
-  sig <- sapply(pval, function(x) if (x <= .01) ".01"
-                else if (x <= .05) ".05" else if (x <= .1) ".1"
-                else "indiscernible")
+  sig <- sapply(pval, function(x) if (x <= .05) "yes" else "no")
   df <- data.frame("var" = rnames, "imp" = var.imp,
-                   "sig" = factor(sig, levels = c(".01", ".05", ".1", "indiscernible")))
+                   "sig" = factor(sig, levels = c("yes", "no")))
   df$var <- reorder(factor(df$var), df$imp)
   p <- ggplot(data = df, aes(x = factor(var), y = imp, fill = sig))
-  p <- p + scale_fill_grey(name = "p-value")
+  p <- p + scale_fill_grey(name = "p < .05")
   p <- p + geom_bar(stat = "identity")
   p <- p + labs(x = "Variable", y = "Importance", title = title)
   p <- p + coord_flip() + theme_bw()
