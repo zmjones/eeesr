@@ -1,4 +1,4 @@
-invisible(lapply(c("ggplot2", "grid"), require, character.only = TRUE))
+invisible(lapply(c("ggplot2", "grid", "reshape2"), require, character.only = TRUE))
 
 PlotAll <- function(df, file.prefix, title) {
   df$spec <- reorder(df$spec, df$coef)

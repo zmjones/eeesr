@@ -1,30 +1,30 @@
-repo: data/rep.csv setup all cv imp plot hll_jones_hr.pdf clean
+repo: data/rep.csv setup.Rout all.Rout cv.Rout imp.Rout plot.Rout hill_jones_hr.pdf
 
 data/rep.csv: data.R
 	R CMD BATCH --no-save data.R
 
-setup: setup.R
+setup.Rout: setup.R
 	R CMD BATCH setup.R
 
-all: all.R setup.R
+all.Rout: all.R setup.R
 	R CMD BATCH all.R
 
-cv: cv.R setup.R
+cv.Rout: cv.R setup.R
 	R CMD BATCH cv.R
 
-imp: imp.R setup.R
+imp.Rout: imp.R setup.R
 	R CMD BATCH imp.R
 
-plot: plot.R all cv imp
+plot.Rout: plot.R all.R cv.R imp.R
 	R CMD BATCH plot.R
 
 TEXCMD := pdflatex -interaction=batchmode
-hill_jones_hr.pdf: ./hill_jones_hr.tex ./figures/*.png
+hill_jones_hr.pdf: hill_jones_hr.tex plot.Rout
 	$(TEXCMD) $<
 	bibtex *.aux
 	$(TEXCMD) $<
 	$(TEXCMD) $<
 
 clean:
-	find . | egrep ".*((\.(aux|log|blg|bbl|out|Rout|Rhistory|DS_Store|RData))|~)$$" | xargs rm
+	find . | egrep ".*((\.(aux|log|blg|bbl|out|Rhistory|DS_Store))|~)$$" | xargs rm
 	rm -rf auto
