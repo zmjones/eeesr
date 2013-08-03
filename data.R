@@ -1,5 +1,7 @@
-rm(list = ls())
-source("functions.R")
+pkgs <- c("plyr", "countrycode", "foreign")
+invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
+                 install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
+invisible(lapply(pkgs, require, character.only = TRUE))
 
 cat <- read.csv("./data/cat.csv")[, c(1:2,6)]
 cpr <- read.csv("./data/cpr.csv")[, c(1:2,6)]

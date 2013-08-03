@@ -4,6 +4,11 @@ CORES <- 8
 CV_FOLD <- 10
 CV_ITER <- 1000
 
+pkgs <- c("plyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
+          "countrycode", "foreign", "rms", "multicore", "party")
+invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
+                 install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
+
 df <- read.csv("./data/rep.csv")
 df$disap <- as.ordered(df$disap)
 df$kill <- as.ordered(df$kill)
