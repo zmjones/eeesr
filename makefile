@@ -1,4 +1,4 @@
-repo: data/rep.csv setup.Rout all.Rout cv.Rout imp.Rout plot.Rout hill_jones_hr.pdf
+repo: data/rep.csv setup.Rout all.Rout cv.Rout imp.Rout plot.Rout hill_jones_hr.pdf clean_tex
 
 data/rep.csv: data.R
 	R CMD BATCH --no-save data.R
@@ -25,6 +25,10 @@ hill_jones_hr.pdf: hill_jones_hr.tex plot.Rout
 	$(TEXCMD) $<
 	$(TEXCMD) $<
 
-clean:
-	find . | egrep ".*((\.(aux|log|blg|bbl|out|Rhistory|DS_Store))|~)$$" | xargs rm
+clean_tex:
+	find . | egrep ".*((\.(aux|log|blg|bbl|out|DS_Store))|~)$$" | xargs rm
+	rm -rf auto
+
+clean_r:
+	find . | egrep ".*((\.(Rout|RData|Rhistory))|~)$$" | xargs rm
 	rm -rf auto
