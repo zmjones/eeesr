@@ -1,0 +1,338 @@
+\documentclass[12pt]{article}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{setspace,endnotes,amsmath,amsfonts,amssymb,url,graphicx,booktabs,longtable,qtree}
+\usepackage[colorlinks=TRUE, citecolor=black, urlcolor=blue]{hyperref}
+\usepackage[round]{natbib}
+\bibpunct{(}{)}{;}{a}{}{,}
+\usepackage{caption}
+%\captionsetup[table]{labelsep=space}
+
+\setlength{\LTcapwidth}{5in}
+\def\p3s{\phantom{xxx}}
+\parskip=0pt
+\parindent=30pt
+\begin{document}
+
+\vspace{50mm}
+\date{\today}
+\title{An Empirical Evaluation of Explanations for State Repression\thanks{Draft Version, Do Not Circulate}}
+\bigskip
+\author{Daniel W. Hill, Jr.\thanks{Assistant Professor, Department of International Affairs,
+University of Georgia. email: dwhill@uga.edu.} and Zachary M. Jones\thanks{Pennsylvania State University. email: zmj@zmjones.com.}}
+
+\maketitle \thispagestyle{empty}
+
+\clearpage
+\onehalfspace
+
+\section{Introduction}
+
+The past 20-30 years has witnessed the birth and tremendous growth of an empirical, quantitative literature that examines cross-national patterns of state repression \citep[See, e.g.,][]{Stohletal1986, Park1987, McCormickMitchell1988, Henderson1991, Henderson1993, PoeTate1994, Davenport1995, Fein1995, Davenport1999, CingranelliRichards1999isq, Keith1999, Poeetal1999, Apodaca2001, RichardsGellenySacko2001,  Hathaway2002, Keith2002PRQ, DavenportArmstrong2004, BDMetal2005, HafnerBurton2005jpr, HafnerBurtonTsutsui2005, Davenport2007AR, Davenport2007, KeithTatePoe2009, CingranelliFilippov2010}. The general purpose of this literature is to discover a set of political, economic, and social conditions that are consistently associated with government violations of the most basic human rights.\footnote{``The most basic human rights'' means freedom from political imprisonment, torture, kidnapping, and extrajudicial execution, generally referred to as personal, or physical, integrity rights \citep[See, e.g.][]{PoeTate1994, CingranelliRichards1999isq}.} In other words, this literature aims to answer why some governments violate basic human rights more than others. This is an enormously important question that relates directly to one of the fundamental problems of politics, which is how an entity given the exclusive authority to enforce rules through physical coercion (the state) can be prevented from abusing that authority \citep[See, e.g.,][]{Moore2010}. 
+
+Though the basic research question explored by this literature is of tremendous intrinsic importance, the standards currently used to assess claims about the causes of state repression are inadequate. Specifically, scholars nearly always employ null hypothesis tests of statistical significance to determine if a particular covariate is a meaningful determinant of state repression. Under this approach, covariates whose coefficients achieve a p value smaller than some arbitrary threshold (usually 0.05) are declared important determinants of state repression. Using this criteria, the literature has uncovered a number of empirical regularities with respect to state repression. Some concepts have been so consistently related to repression that researchers are now obligated to include measures of them in their models. This list of ``usual suspects'' now includes, at minimum, measures of GDP per capita, population size, civil and international war, and democratic political institutions. Beyond these relationships, the list of concepts that influence repression has been steadily expanded to include INGO presence and behavior \citep{HafnerBurtonTsutsui2005, MurdieDavis2012}, participation in international financial institutions \citep{AbouharbCingranelli2006, AbouharbCingranelli2007}, and domestic legal institutions \citep{Cross1999, KeithTatePoe2009, Mitchell2013}, to name just a few. 
+
+While the current approach has value we argue that, by itself, the standard analysis used in the literature is incomplete at best, and is possibly misleading. Most importantly, scholars have no way of knowing if the patterns they uncover are the result of the pecularities of a particular data set or whether they are more general. Too, the current approach completely ignores the ability of a model to {\em predict} state repression. This is an important omission since variables that are statistically significant may not meaningfully increase the ability of a model to predict the outcome of interest \citep{Wardetal2010}. While tests for statistical significance have value, evaluating the ability of a model to predict state violence out-of-sample offers at least an additional, and perhaps a better way, of assessing the veracity of potential explanations for its occurrence \citep[See, e.g.][]{BeckKingZeng2000}. That is, significance tests for coefficient(s) are certainly not the only option available, and they may not be the best. 
+
+This study remedies this deficiency in the literature through a cross-validation experiment. Cross-validation is a well developed and widely accepted method for assessing the relative predictive performance of statistical models \citep[See, e.g.,][]{Geisser1975, Efron1983, PicardCook1984, HastieTibshiraniFriedman2008}, though its use is relatively rare in political science.\footnote{See \citet{HoffWard2004}, \citet{WardHoff2007}, \citet{WardSiversonCao2007}, and \citet{Wardetal2010} for exceptions.} The experiment below assesses the ability of covariates which the literature identifies as important to increase the predictive power of a model of government repression beyond models that include minimal, baseline sets of ``usual suspect'' covariates. We find that some, but relatively few, of the concepts identified by the literature as important determinants of state repression are able to substantially improve the out-of-sample fit of statistical models predicting state repression. To foreshadow, out of all the covariates considered, civil conflict is the best predictor of most indicators of state repression. Further, the most studied concept in the literature, democratic political institutions, predicts certain kinds of repression much more accurately than others, which has gone unnoticed in this literature. We argue that this is partly due to conceptual overlap between democracy and particular kinds of state repression. Also, some concepts which have received relatively little attention in the literature, including domestic legal institutions, demographic ``youth bulges,'' and state reliance on natural resource rents, perform quite well. We conclude that some of the concepts providing the largest gains in predictive power indicate a lack of strong theoretical development in the literature, while others that perform well suggest new paths for future theoretical and empirical work. 
+
+\section{A Brief Tour of The Literature}
+
+Cross-national, quantitative research on government repression, which began in earnest in the mid-eighties, was made possible by the publication of annual, national reports on human rights conditions by Freedom House, Amnesty International (AI), and the US State department (USSD). Early work used cross sections of these data to test hypotheses about the impact of various concepts on repression. The most seminal work in the field is due to \citet{PoeTate1994}, who presented the first multivariate analysis using data covering a relatively large time span and a relativley large number of countries. These data were coded from the annual reports of AI and the USSD. \citet{PoeTate1994} found that the coefficients associated with measures of democracy and GDP per capita were negative and statistically significant, and those associated with population size and the occurrence of international and civil wars were significant and positive. A measure of ``leftist'' regimes, too, was found to be positive and significant, though only using the data coded from State Department reports.\footnote{For an analysis of the differences between the two sources see \citet{Poe2001}.} \citet{Poeetal1999} later updated these results using data covering an even larger time period, and additionally found statistically significant relationships between repression and 1) military regimes (positive), 2) former British colonial status (negative), and 3) leftist governments, though this time the relationship was negative for the latter measure. 
+
+At least one of the relationships uncovered by early work, that between repression and democracy \citep{Henderson1991,PoeTate1994}, has been explored in-depth by a number of scholars, who have examined various topics such as how transitions to/from democracy affect repression \citep{Davenport1999}, the functional form of the relationship between democracy and repression \citep{Fein1995,DavenportArmstrong2004}, and which aspects of democracy are most strongly related to repression \citep{BDMetal2005, Davenport2007}. For most research investigating additional potential causes of repression, however, most of the covariates listed above were simply adopted as standard ``control'' variables, particularly population size, GDP per capita, and international and civil war. 
+
+Subsequent work examined the relationship between repression and a variety of potential influences. One body of work focused on the impact of international economic factors such as exposure to trade and foreign investment \citep{Apodaca2001, RichardsGellenySacko2001, HafnerBurton2005jpr},\footnote{\citet{HafnerBurton2005jpr} provides an extensive discussion of this literature, and performs an extreme bounds analysis \citep{LeamerLeonard1983} to address this literature's inconsistent empirical findings. This is a valuable effort, but is motivated by different concerns than those motivating the analysis below. Hafner-Burton's study examines the sensitivity of statistical relationships to the inclusion of different groups of covariates. Her inferences are based on models fitted using all the available data and are drawn on the basis of (a large number of) null hypothesis tests. Thus her analysis does not guard against overfitting or provide any information about the predictive power of the included covariates.} and participation in IMF and World Bank programs \citep{AbouharbCingranelli2006, AbouharbCingranelli2007}. This work has found, generally, a negative relationship between repression and openness to trade and investment, and a positive relationship between repression and participation in IMF/World Bank structural adjustment programs. \citet{HafnerBurton2005io} focuses on human rights clauses in preferential trade agreements, and finds a negative relationship.\footnote{Though see \citet{SpilkerBohmelt2012}, who use matching techniques prior to their regression analysis and find no relationship between PTAs and repression.} 
+
+Another line of research examines the impact of civil society broadly, and human rights NGO/INGO and Western media activity specifically, on human rights practices \citep{HafnerBurtonTsutsui2005,HafnerBurton2008,MurdieDavis2012}. The impact of NGO/INGO presence on repression has been found to be negative, while results concerning the effects of ``naming and shaming'' are more mixed.\footnote{\citet{HafnerBurton2008} finds positive/null relationships between repression and NGO shaming measures while \citet{MurdieDavis2012} find a negative relationship. The differences are due to different sets of data and the fact that \citet{MurdieDavis2012} interact NGO activity with several other covariates.} 
+
+Yet another group of studies investigates the impact of domestic, and international, legal institutions on state repression \citep{Davenport1996JOP,Cross1999,Hathaway2002,HafnerBurton2005io,Neumayer2005,KeithTatePoe2009,Simmons2009, PowellStaton2009,Hill2010,Lupu2011,Mitchell2013}. Concerning domestic legal institutions, \citet{Davenport1996JOP}, \citet{Cross1999}, and \citet{KeithTatePoe2009} find negative relationships between repression and certain kinds of constitutional provisions, while \citet{Mitchell2013} find that common law legal systems are associated with less repression. \citet{PowellStaton2009} report a negative relationship between {\it de facto} judicial independence and state violence. Most research examining the impact of international law focuses on UN treaties and has found no relationship or even a positive relationship between treaty ratification and repression \citep{Keith1999,Hathaway2002,Hill2010}, while other studies have found positive relationships conditional on certain features of domestic politics and society, including democratic political institutions, a large NGO presence, and the expected tenure of political leaders \citep{Neumayer2005,Simmons2009,ConradRitter2013}. 
+
+Two recent studies have examined other macro-level factors, one evaluating how state reliance on natural resource rents, rather than tax revenue, affects incentives for governments to use repression \citep{DemerittYoung2013},\footnote{The measure of resource rents comes from \citet{Ross2006}.} the other analyzing the relationship between so-called ``youth bulges'' and cross-national levels of state violence \citep{NordaasDavenport2013}.\footnote{They employ a measure from \citet{Urdal2006}.} 
+
+For our purposes we do not need to review all of the theoretical arguments presented in the studies cited above. Our goal is to evaluate whether 1) the relationships discovered by this broad literature are generalizable beyond the particular data sets which produced these relationships, and 2) indicators of the concepts identified as important determinants of state repression improve the predictive power of statistical models of state repression. In the next section we discuss the methods and data used to accomplish this goal.
+
+\section{Evaluating Models of State Repression}
+ 
+As discussed above, the standard criteria for assessing the veracity of a potential explanation for state repression is a null hypothesis test for one or more covariates which measure theoretically relevant concepts. The shortcomings of this criteria for social science research are well documented \citep[See, e.g.][]{Gill1999}, and we do not discuss all of them here. Our concern is that the use of this criteria alone has hindered the development of generalizable and accurate explanations for repression.  Since scholars typically use all of the data available to estimate their models there is a significant danger of overfitting, i.e. discovering a relationship that is the result of the (perhaps unusual) features of a particular dataset rather than a meaningful relationship between repression and a concept of interest. This is potentially a very serious problem since the purpose of cross-national research on state repression is to uncover {\em general} empirical regularities between repression and concepts of interest. Related to this point, strict adherence to null hypothesis tests alone ignores the ability of a model to predict instances of state repression. If a theoretically informed model of state repression has in fact uncovered an important cause of repression, then the model should be able to produce fairly accurate predictions in a set of data which was not used for its estimation \citep[See][]{BeckKingZeng2000,Wardetal2010}. Too, in the context of state violence, creating models with predictive validity will be of significant interest to policymakers. Finally, recent work on civil war has shown that statistical significance and predictive validity can actually be at odds with one another, i.e. covariates with statistically significant coefficients can actually impair a model's predictive performance \citep{Wardetal2010}.  These are important points that have been entirely ignored in the quantitative literature  on government violence. Cross-validation techniques, which we discsuss below, can address these omissions.
+
+\subsection{Cross-Validation}
+
+The purpose of cross-validation is to examine the out-of-sample predictive power of a statistical model.\footnote{For a useful introduction to these methods for political science research see \citet{LeeAhlquist2011}.} A typical cross-validation experiment proceeds as follows: the data are divided into $k$ subsets, a model is estimated using $k-1$ of the subsets (the ``training'' set), and predictions are generated/evaluated using the remaining subset (the ``test'' set). The data are ``rotated'' $k$ times so that each of the $k$ folds is eventually used as the test set, and the prediction error is averaged across the test sets. This is often called $k$-fold cross-validation. Typically the data are divided up a number of times in this fashion to ensure that results are not dependent on dividing the data in a particular way. For the analysis below we perform 10-fold cross-validation.\footnote{In practice the choice of $k$ does not seem to be very consequential, and $k=10$ is fairly standard in the machine learning literature \citep[See, e.g.][]{HastieTibshiraniFriedman2008}.} During the experiment we constrain the folds to have approximate balance on the dependent variable (i.e. the distribution of the dependent variable is approximately the same in all 10 folds). We divide the data into 10 folds, estimate coefficients, and calculate the prediction error 100 times for each model.  Resampling this many times allows us to approximate the uncertainty around the average prediction error for each model, which is useful for comparing performance across models. We describe the statistics used to evaluate model performance below. 
+
+\subsection{Data and Models}
+
+The most commonly employed indicators of state repression in the quantiative literature on that topic are the Cingranelli-Richards (CIRI) physical integrity index \citep{CIRI2010} and the Political Terror Scale (PTS) \citep{GibneyCornettWood2009}. While there are some differences between the two,\footnote{See \citet{WoodGibney2010} and \citet{CingranelliRichards2010}} both of these are ordinal indicators that measure instances of political imprisonment, torture, kidnapping, and summary executions. The most important difference between these two indicators is that the CIRI physical integrity rights index can be disaggregated into components that measure each of these abusive practices separately. The analysis below employs each of the CIRI components in addition to the PTS and the aggregated CIRI index. This allows us to evaluate whether theoretically informed covariates are better at predicting some repressive practices than others. 
+
+For models using the PTS and the aggregate CIRI index we estimate linear models, which is fairly common practice in the literature. We estimate ordinal logit models for the CIRI component scales and for the PTS. For the linear models, root mean squared error provides a straightforward way of assessing predictive performance.\footnote{Root mean squared error is $\displaystyle \sqrt{\frac{1}{N} \sum\limits_{i=1}^N (\hat{Y_{i}} - Y_{i})^2} $} For ordinal variables such as the CIRI components the choice of a discrepancy statistic is not as obvious. We use Somer's $D$ rank correlation coefficient  \citep{Somers1962} as our discrepancy statistic for the ordered logit models.
+Somer's $D$ is closely related to Goodman and Kruskal's $\gamma$ and Kendall's $\tau$, differing only in the denominator. Somer's $D$ makes a distinction between the independent and dependent variable in a bivariate distribution, correcting for ties within the independent variable. With $Y$ being treated as the independent variable it is denoted $D_{xy}$. 
+Specifically:
+$$D_{xy} = \frac{P - Q}{P + Q + X_0}$$
+\noindent where $P$ is the number of concordant pairs, $Q$ is the number discordant pairs, and $X_0$ is the number of ties in $X$.\footnote{Somer's $D$ is similar to the commonly used $\tau_b$, which is equal to $\frac{P - Q}{(P+Q+X_0)(P+Q+Y_0)}$, where $Y_0$ is the number of ties in $Y$, and $\gamma$, which is equal to $\frac{P - Q}{P + Q}$.} This is simply a measure of association for ordinal variables, so our approach is essentially to calculate the correlation between predicted and observed values. Like all correlation coefficients, the $D$ statistic lies in the interval $[-1, 1]$, with values closer to $1$ indicating more rank agreement and values closer to $1$ indicated less rank agreement, so values closer to -1 indicate more prediction error. In the results section below we discuss how we use these performance measures to judge whether covariates add substantially to a model's predictive ability. 
+
+We also estimate a set of random forests, which we use to perform variable selection on all variables at once, while allowing for a non-linear functional form, complex interactions, and missigness in the covariates.\footnote{Missingness is handled via surrogate splits. See \citet{hothorn2006unbiased} for details.} Random forests are an ensemble of decision trees which are the result of recursively partitioning the covariate space and defining a local model on each partition \citep[pp. 543-551]{murphy2012machine}.\footnote{Ensembles of decision trees (aka random forests) are necessary because decision trees are high variance estimators. Typically bagging, or bootstrapped aggregating, is used to decorrelate the predictions made by each tree in the forrest by sampling with replacement both cases and input variables, instead of doing either or neither. We instead use sub-sampling (i.e. sampling without replacement), which has been shown to work better under weaker conditions \citep{politis-sub}.} Decision trees find an optimal partition of the covariate space (``growing'' the tree).\footnote{This typically is accomplished via a greedy algorithm (i.e., an optimizer that makes the locally optimal choice at each step).} Finding the optimal partition of the input space involves choosing the best variable and the best place to partition said variable. For example, suppose we had two independent variables, $x_1$ and $x_2$, that were related to a dependent variable $y$ in some unknown manner. First, the algorithm would ask which variable was most strongly related to $y$, and then find a threshold $t$ in said variable that maximizes some fit criteria. This procedure is repeated until a stopping criteria is met. Figure \ref{fig:tree} shows this procedure visually.
+
+\begin{figure}[!htpb]
+\Tree[.{$x_1 \leq t_1$} [.{$x_2 \leq t_2$} [.{\small{$R_1$}} ] [.{$x_1 \leq t_3$} [.{\small{$R_4$}} ][.{\small{$R_5$}} ]]] [.{$x_2 \leq t_4$} [.{\small{$R_2$}} ] [.{\small{$R_3$}} ]]]
+\caption{An example of recursive partitioning with two variables, $x_1$ and $x_2$.}
+\label{fig:tree}
+\end{figure}
+
+We utilize the approach of \citet{hothorn2006unbiased} which first tests the global null hypothesis of no relation between the covariates in the partition $P$, $X_j^P$, where $j$ indexes each covariate. If this global null hypothesis can be rejected at a pre-specified level $\alpha$, then the covariate with the smallest $p-values$ is selected, and an optimal split is found. This avoids the established bias towards variables with many possible partitions in many other random forest implementations \citep{hothorn2006unbiased, strobl2007bias}.
+
+Variable importance is assessed using an unscaled permutation test which measures the mean decrease in classification performance after permuting each element of the set of predictors $X_j$ over all trees in the forest. Permuting important variables should result in a systematic decrease in classification accuracy when they are permuated, whereas unimportant variables should result in a random decrease or no decrease in classification accuracy. The variable importance scores presented herein are marginal measures of importance, i.e. they do not measure the importance of the variable conditional on the importance of the other predictors, thus, scores can be confounded by correlations between predictors.\footnote{Although it is possible to conduct a conditional permutation test, it is computationally infeasible in its current implementation with the large number of predictors and observations in this study.} Figure \ref{fig:cor-cov} shows a correlation matrix of all the predictors used in this study. Although there are some highly correlated covariate pairs, the covariates are not so highly correlated as to make this experiment uninformative.
+
+\begin{figure}[!htpb]
+\includegraphics[width=\textwidth]{./figures/cor-cov.png}
+\caption{Correlations between all covariates. Polity and its components are highly correlated, as are the media covariates from Ron, Ramos, and Rodgers (2005). Youth bulges are negatively correlated with Polity and its components. There are numerous other moderate correlations.}
+\label{fig:cor-cov}
+\end{figure}
+
+Our explanatory variables are drawn from the literature. We use indicators of concepts that are ``usual suspect'' covariates (i.e., standard control variables) as well as indicators for concepts whose relationships with repression are less well-established. Table \ref{vars} lists the measures used below and the sources from which they were obtained. Full descriptions of these data can be found in the appendix. In our cross-validation experiment we assess the increase in predictive validity which results from adding each variable to two different baseline models: one that include only (the natural logs of) GDP per capita and population size, and another that includes both of these variables and an indicator of civil war from the UCDP/PRIO armed conflict data set \citep{ThemnerWallensteen2012}.\footnote{We employ the measure of ``high-intensity'' conflict, i.e. conflict producing $\geq$ 1000 annual battle-related deaths, as this measure performs much better in cross-validation than the ``low-intensity'' measure, which uses a death threshold of 25.}
+
+\begin{table}[htbp!] 
+\caption{Measures and Sources} \label{vars}
+\centering
+\begin{tabular}{ll}
+Measure & Source \\
+\toprule
+{\em Demographics} & \\
+Population Size & Gleditsch (2002) \\
+Youth Population & Urdal (2006) \\ 
+\midrule
+{\em Macroeconomic Factors} & \\
+GDP per capita & Gleditsch (2002) \\
+Oil Revenue & Ross (2006) \\ 
+\midrule
+{\em Violent Conflict} & \\
+Civil War & UCDP/PRIO armed conflict \\
+Interstate War & UCDP/PRIO armed conflict \\
+\midrule
+{\em Political Institutions} & \\
+Democracy & Polity IV\\
+Military Regime & Database of Political Institutions \\
+Left/Right Regime & Database of Political Institutions  \\
+\midrule
+{\em Domestic Legal Institutions} & \\
+{\em de facto} Judicial Independence & CIRI \\
+Constitutional Provisions & Keith, Tate, and Poe (2009) \\
+Common Law System & Mitchell, Ring, and Spellman (2013) \\
+\midrule
+{\em International Economic Factors} & \\
+Trade Openness & World Bank \\
+Foreign Direct Investment & World Bank \\
+Structural Adjustment (WB and IMF) & Abouharb and Cingranelli (2007) \\
+PTA Agreement w/ Human Rights Clause & Spilker and Bohmelt (2012) \\
+\midrule
+{\em Civil Society/INGOs} & \\
+INGO Presence & Hafner-Burton and Tsutsui (2005) \\
+INGO ``Shaming'' & Ron, Ramos, and Rodgers (2005)  \\
+Western Media ``Shaming'' & Ron, Ramos, and Rodgers (2005) \\
+\midrule
+{\em International Law} & \\
+ICCPR Ratification & UN website via {\tt \href{http://github.com/zmjones/untreaties}{untreaties}} \\
+CAT Ratification & UN website via {\tt \href{http://github.com/zmjones/untreaties}{untreaties}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Several points about our data are worth mentioning. First, we do not include a lagged dependent variable in any of our models, which flaunts a convention in the literature.\footnote{This seems to have become standard practice as a result of a significant coefficient for a lagged dependent variable in \citet{PoeTate1994}.} We do this because, frankly, we think results for this variable would not be terribly interesting. Our purpose is not to build the best possible predictive model of state repression, but rather to assess the veracity of different theoretical explanations for repression by seeing how well theoretically motivated covariates improve a model's predictive power. While inclusion of a lagged dependent variable would almost undoubtedly serve our interest if prediction alone was our goal, it would not tell us very much about the accuracy of existing explanations for repression. 
+
+Second, for several of the concepts listed in Table \ref{vars} we use multiple measures. These include our measure of democracy, the Polity IV scale \citep{MarshallJaggers2009}, for which we employ both the commonly used ``democracy minus autocracy'' scale, as well as each of the democracy components. One study analyzing the Polity data found that the aggregated scale primarily reflects the ``executive constraints'' subcomponent \citep{GleditschWard1997}, and studies of repression have found that some of the Polity subcomponents are more strongly related to repression than others \citep{Keith2002PRQ, BDMetal2005}. We also employ multiple measures of INGO ``shaming,'' both of which come from \citet{RonRamosRodgers2005} and were employed by \citet{HafnerBurton2008}. These are counts of the number of Amnesty International press releases and background reports issued about a particular country during a given year. These variables are all lagged by one year. The constitutional protection data from \citet{KeithTatePoe2009} also includes multiple measures, all found to be statistically significant in regressions using the PTS: provisions for a fair trial, provisions for a public trial, provisions stating that the decisions of high/constitutional courts are final, and provisions which require legislative approval to suspend constitutional liberties. 
+
+Finally, past results for a few of the covariates in Table \ref{vars} are rather mixed. These are the measures of ``shaming'' by INGOs and Western media, and measures of ratification for two core UN human rights conventions: the International Covenant on Civil and Political Rights (ICCPR), and the Convention Against Torture (CAT). \citet{HafnerBurton2008} finds that shaming by Amnestiy International (AI) is actually {\it positively} associated with repression, while shaming by Western media bears no relationship to repression. A more recent study by \citet{MurdieDavis2012} employs data on shaming by many INGOs rather than AI only, and finds a negative relationship between NGO shaming and repression conditional on NGO presence and ``shaming'' by other actors (such as governments). Though these data are available for use, they cover a relatively short time period and their inclusion would require us to drop so many observations as to make the cross-validation experiment infeasible. Thus we employ only the measures used by \citet{HafnerBurton2008} because of the unexpected, positive, and statistically significant relationship discovered in that study, and for practical reasons. With respect to the human rights treaties data, we employ these indicators because of similar unexpected, statistically significant findings in the literature, and because we believe the volume of recent work on this topic justifies the inclusion of human rights treaty ratification. In the next section we discuss the results of our cross-validation experiment.
+
+\subsection{Results}
+
+To determine whether the inclusion of a covariate is justified, we adopted the following rule: if the lower bound of the prediction error for the model including that covariate is above the upper bound of the prediction error for the baseline model, then the covariate should be included.\footnote{Since higher values of Somer's $D$ indicate more predictive power, this is the rule for the ordered logit models. For RMSE lower values indicate better predictions, so the rule is reversed, i.e. the upper bound of the model which includes the covariate in question should be below the lower bound for the baseline model.} This is a rather strict rule, but we feel it is justified since we are evaluating the performance of models which include the covariate in question against models that are very stripped-down relative to those common in the literature. Figures \ref{cv-physint}-\ref{cv-cwar-kill} display the median prediction error (shown as dots) as well as the upper and lower bound of the error (shown as lines) for each model we estimate.\footnote{Recall that the data were randomly divided into 10 folds 1000 times for each model.} The models are sorted by the median prediction error from low to high, with a dashed line placed at the upper bound (or lower bound, depending on the discrepancy statistic) of the baseline model. The grey, horizontal bands in each figure highlight the baseline models. 
+
+The first set of figures (\ref{cv-physint}-\ref{cv-kill}) show the consequences of adding different covariates to a model that includes only GDP per capita and population. A passing glance at these figures immediately conveys that civil conflict, for most measures of repression, adds much more predictive power to this baseline model than any other covariate examined here. This is consistent with the observation that governments respond to violent dissent with repression, a phenomenon one scholar \citep{Davenport2007AR} has termed the ``law of coercive response.'' The fact that this relationship is labeled a ``law'' gives some indication of its regularity. We return to this result in the discussion section below. 
+
+Clearly civil war predicts repression better than nearly all of the other covariates, but there are exceptions to this pattern. For the political imprisonment component of the CIRI physical integrity index, civil war is outperformed by the aggregated Polity scale as well as all of the components of the democracy scale, particularly the ``parcomp'' component. This latter result is consistent with previous studies \citep{Keith2002PRQ,BDMetal2005}, though no study we are aware of has noted that democracy predicts political imprisonment more accurately than it does other kinds of government violence. While the performance of Polity and its democratic components is impressive, their ability to predict the imprisonment of political opposition is partly driven by the way Polity defines and operationalizes democracy, which makes any relationship between Polity and political imprisonment tautological. We return to this point below after discussing our other results.
+
+The other measure of government violence for which civil war adds less predictive power than other covariates is the torture component of the CIRI scale. For this indicator the measure of youth population from \citet{Urdal2006} employed by \citet{NordaasDavenport2013},\footnote{This indicator measures the proportion of the adult population (older than 15) that is younger than 25.} the CIRI measure of {\it de facto} judicial independence, and the ``parcomp'' scale all add more predictive power to the baseline model than civil conflict. The concepts measured by the first two of these covariates have received relatively little attention in the literature, and their performance in the analysis warrants closer attention in future theoretical and empirical research. 
+ 
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-physint.png}
+\caption{Root mean squared error (RMSE) over 1000 10-fold cross-validation iterations using $\log \text{GDP per capita} + \log \text{Population}$ as the base model specification (indicated by the grey band on the $y$-axis) for the CIRI physical integrity index, which ranges from 0 to 9. All other rows are models including this base specification along with the variable indicated on the $y$-axis. Since the fit statistic under consideration is RMSE, better fit is indicated by smaller RMSE. The dashed line indicates the lower bound of the fit of the base model.}
+\label{cv-physint}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-pts-ols.png}
+\caption{}
+\label{cv-pts-ols}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-pts-lrm.png}
+\caption{Somer's $D_{xy}$, a rank correlation coefficient, over 1000 10-fold cross-validation iterations using $\log \text{GDP per capita} + \log \text{Population}$ as the base model specification (indicated by the grey band on the $y$-axis) for the Political Terror Scale (PTS), which ranges from 0 to 5. All other rows are models including this base specification along with the variable indicated on the $y$-axis. Since the fit statistic under consideration is Somer's $D_{xy}$, which ranges from 0 to 1, higher values indicate better fit. The dashed line indicates the upper bound of the fit of the base model.}
+\label{cv-pts-lrm}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-polpris.png}
+\caption{}
+\label{cv-polpris}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-tort.png}
+\caption{}
+\label{cv-tort}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-disap.png}
+\caption{}
+\label{cv-disap}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-kill.png}
+\caption{}
+\label{cv-kill}
+\end{figure}
+
+Figures \ref{cv-cwar-physint}-\ref{cv-cwar-kill} display results from cross validation analyses in which the baseline model now includes civil war in addition to GDP per capita and population. For the aggregated CIRI scale, the CIRI measure of {\it de facto} judicial independence adds the most predictive power to the baseline model, followed by the measure of youth bulges and the ``parcomp'' scale. Oil rents, which has only recently receive attention in the literature, also perform quite well in this model. For the linear model using the PTS, youth bulges, judicial independence, and common law legal systems perform best. Results from the ordinal logit PTS model indicate that youth bulges and judicial independence again perform best, followed by the ``xropen'' and ``parcomp'' Polity subcomponents, and common law legal systems. 
+
+The NGO shaming variables, particularly the measure of Amnesty press releases, also add substantially to this baseline model. Note that this says nothing about the {\it direction} of the relationship between shaming and repression; it only indicates that inclusion of lagged Amnesty press releases improves the ability of the model to predict repression out-of-sample. Also notable is the performance of consitutional provisions for fair trials from \citet{KeithTatePoe2009}, which performs well in all of the models using the aggregate scales. This result, along with the impressive performances of common law legal heritage and judicial independence, justifies a stronger focus on legal institutions in future studies of repression. This is another point to which we return below. 
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-cwar-physint.png}
+\caption{Root mean squared error (RMSE) over 1000 10-fold cross-validation iterations using $\log \text{GDP per capita} + \log \text{Population} + \text{Civil War}$ as the base model specification (indicated by the grey band on the $y$-axis) for the CIRI physical integrity index, which ranges from 0 to 9. All other rows are models including this base specification along with the variable indicated on the $y$-axis. Since the fit statistic under consideration is RMSE, better fit is indicated by smaller RMSE. The dashed line indicates the lower bound of the fit of the base model.}
+\caption{}
+\label{cv-cwar-physint}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-cwar-pts-ols.png}
+\caption{}
+\label{cv-cwar-pts-ols}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-cwar-pts-lrm.png}
+\caption{Somer's $D_{xy}$, a rank correlation coefficient, over 1000 10-fold cross-validation iterations using $\log \text{GDP per capita} + \log \text{Population} + \text{Civil War}$ as the base model specification (indicated by the grey band on the $y$-axis) for the Political Terror Scale (PTS), which ranges from 0 to 5. All other rows are models including this base specification along with the variable indicated on the $y$-axis. Since the fit statistic under consideration is Somer's $D_{xy}$, which ranges from 0 to 1, higher values indicate better fit. The dashed line indicates the upper bound of the fit of the base model.}
+\caption{}
+\label{cv-cwar-pts-lrm}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-cwar-polpris.png}
+\caption{}
+\label{cv-cwar-polpris}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-cwar-tort.png}
+\caption{}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-cwar-disap.png}
+\caption{}
+\label{cv-cwar-disap}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/cv-cwar-kill.png}
+\caption{}
+\label{cv-cwar-kill}
+\end{figure}
+
+Turning to results from the individual CIRI components, the political imprisonment models are largely consistent with those above: the Polity scale and its democratic components peform best, though the aggregated scale outperforms all of the components, which is not true for the first baseline model. Judicial independence and fair trial provisions again add predictive power, as does oil rents. It is also worth mentioning that, for political imprisonment, measures of trade openness and military regime do well relative to the baseline model, which is not true for the other measures of government violence used here. The results pertaining to torture are very consistent with the analysis above, with judicial independence, youth bulges, and ``parcomp'' adding the most predictive validity to the baseline model. 
+
+The other two CIRI components, which measure disappearance and extrajudicial killing, behave much differently than the other indicators used in this study. Precious few of the covariates included in the analysis add much predictive power relative to the baseline model. Strict adherence to the decision rule mentioned above leads to the conclusion that only youth bulges increase the predictive power of the baseline model for disappearance, while oil rents just misses the cutoff. For extrajudicial killing, only youth bulges improve the performance of the baseline model. 
+
+12 of the 30 covariates included in the analysis failed to add predictive power to {\it any} of the baseline models. These are: ratification of the ICCPR, ratification of the CAT, left government, british colonial status, the three variables measuring participation in IMF and World Bank structural adjustment programs, consitutional provisions stating that high court decisions are final, constitutional provisions giving the legislature authority over declaration of states of emergency, foreign direct investment, international war, and INGO presence. That the last three of these fail to add any predictive validity to our baseline models is very surprising, and we discuss the implications of these findings below. Results are more mixed, but still weak, for PTAs with a human rights clause\footnote{This variable only adds predictive power to the aggregate scale (CIRI and PTS) linear models that do not include civil conflict} and constitutional provisions for public trials.\footnote{This variable only increases the power of the aggregate scale linear models that exclude civil war, the linear PTS model that includes civil war, and the CIRI political imprisonment model that excludes civil war.}
+
+We next turn the the permutation importance measures from the random forests, which allow us to estimate the importance of an individual variable given all of the other variables, while relaxing the assumption of additivity and linearity required by OLS and proportional odds logistic regression. Across all dependent variables, civil war and youth bulges remain among the most important predictors. Civil war is the most important predictor in all models but the model of torture, where judicial independence is the most important predictor. Judicial independence is one of the most important predictors across all models. In all models but the model of disappearances the Polity component that measures participation competitiveness, ``parcomp,'' performs well. The importance of the aggregated Polity scale and the other components are more mixed. The aggregated scale and executive constraint are relatively important predictors of the aggregated CIRI scale and PTS. Surprising, in contrast to the cross-validation experiment discussed above, are the importance of the natural log of the ratio of trade to GDP, and the natural log of the number of INGOs. This suggests that these variables may have an interactive or conditional relationship with observed human rights practices. As a more general point, it is worth noting that statistical significance does not seem to be a perfectly reliable indicator of variable importance; a point in line with the findings of many other studies \citep{Wardetal2010}. %need some more here
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/physint-imp-sig.png}
+\caption{Variable importance scores from a random forest and subsampling algorithm using conditional inference trees. Variable importance is the mean decrease in classification accuracy from removal of the indicated variable averaged across all trees. The $p$-value from a proportional odds logistic regression is indicated as well, based on commonly used cutoffs for statistical significance.}
+\label{physint-imp}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/pts-imp-sig.png}
+\caption{}
+\label{pts-imp}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/polpris-imp-sig.png}
+\caption{}
+\label{polpris-imp}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/disap-imp-sig.png}
+\caption{}
+\label{disap-imp}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/tort-imp-sig.png}
+\caption{}
+\label{tort-imp}
+\end{figure}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/kill-imp-sig.png}
+\caption{}
+\label{kill-imp}
+\end{figure}
+
+\section{Discussion/Conclusion}
+
+What do these results tell us about the state of the empirical literature on human rights violations? At least two of the relationships that are well-established in the literature seem to generalize beyond particular sets of data: those between repression and civil war, and repression and democracy. The first of these results strongly suggests, in line with previous studies, that when government/dissident military violence produces a large number of deaths, governments often target non-combatants with violence.\footnote{Neither the CIRI scales nor the PTS include battle-related deaths.} Given the usual Weberian conception of the state as an organization that possesses a monopoly over the organized use of force within a delimited geographic area, it is unsurprising that when this monopoly is threatened governments respond violently. Obviously the relationship between dissident and government violence is strongly reciprocal, yet theoretical work on the dynamics of political violence is thin \citep[But see, e.g.][]{Moore2000,Pierskalla2010,RitterJCR}. Given that reciprocal violence producing civil war (as operationalized here) is such a strong predictor of repression, more theoretical work is sorely needed. 
+
+The relationship between democracy and repression is also very general. As a measure of democracy we employed the Polity data, which is the most commonly used measure in the literature. Results were particularly strong with respect to the ``parcomp'' democratic component, and this component along with the other components and the aggregated scale added a tremendous amount of predictive power to the political imprisonment models. This result is partly the result of conceptual overlap between democracy and repression. The Polity codebook \citep[][p.\ 26]{MarshallJaggers2009} makes it clear that the ``parcomp'' subcomponent in particular partly {\it measures repression}. The lowest category, called ``repressed,'' is defined as follows:
+\begin{quote}
+No significant oppositional activity is permitted outside the ranks of the regime and ruling party. Totalitarian party systems, authoritarian military dictatorships, and despotic monarchies are typically coded here. {\it However, the mere existence of these structures is not sufficient for a ``Repressed'' coding. The regime's institutional structure must also be matched by its demonstrated ability to repress oppositional competition} (emphasis added).
+\end{quote}
+Thus the fact that Polity predicts very well the imprisonment of political opponents and the aggregated repression scales, which both include information about political imprisonment, should not be very surprising. For the PTS this problem is especially bad since the scale cannot be disaggregated to exclude political imprisonment. Unfortunately this is also a problem for the CIRI scale to the extent that governments are repressing political opposition through the use of torture, kidnapping, and summary execution. This is because targeting political opponents with these tactics also reduces a governments level of democracy {\it by definition}, given the way that concept is usually defined in this literature. This is a point that has gone unnoticed in the quantitative literature on repression,\footnote{See \citet{Hill2013}.} and it means that one of the strongest results in the literature is actually the result of estimating what are essentially tautological statistical models. For empirical studies, correcting this problem entails removing government violence that explicitly targets political opponents from the study's dependent variable, if one wishes to employ political competition as a covariate. Or, one could model political repression but remove political competition from the list of covariates included in the model. 
+
+Future theoretical work on repression should also take this point seriously, which entails developing arguments about why governments would have incentives to repress political opponents that do not use political competition as an explanatory concept. One possibility is suggested by the results for oil rents, which \citet{DemerittYoung2013} theorize as related to repression because of the (lack of) incentives to protect human rights that results from increasing non-reliance on citizen-generated revenue. They note that this is consistent with arguments from the literature on democratization \citep[E.g.][]{Huntington1991,BDMSmith2009}. This is a nice theoretical insight, since explanations for why governments would stop violently suppressing political competition are, in some sense, explanations for the emergence of democracy. Future work would benefit from incorporating more insights from the democratization literature about how economic conditions, for example asset mobility and inequality, affect leader's incentives to repress political opposition \citep[See, e.g.][]{Boix2003,AcemogluRobinson2005,ClarkGolderGolder2013}. 
+
+Other promising results here are those for certain features of domestic legal systems, including judicial independence, constitutional guarantees for fair trials, and common law heritage. Judicial independence in particular performed well in the cross-validation analyses, outperforming even civil war in predicting torture. There is a nascent literature on domestic courts and human rights violations, and most of this literature examines the interaction between domestic courts and international law \citep{Hathaway2007,PowellStaton2009,Simmons2009,Conrad2012,ConradRitter2013}. The results here strongly suggest that the relationship between domestic courts and repression is very general and does not depend on a government's ratification status for various international human rights treaties, so studying the impact of domestic courts themselves on repression would be useful. This concept deserves more attention in future theoretical and empirical work, and should probably be operationalized and included as a matter of course in statistical models of repression. 
+
+Regarding constitutional rights protections, the results for fair trial provisions suggest that formal legal protection of basic rights may indeed be more than a ``parchment barrier,'' \citep[See][]{KeithTatePoe2009} and justifies more attention to the law itself, including criminal trial procedures, in future studies.\footnote{See \citet{Cross1999}, who laments a lack of attention to the law in research on human rights violations.} The performance of the common law heritage measure used by \citet{Mitchell2013} also suggests that legal institutions deserve more attention, though the policy implications of this finding are not obvious since legal system type is not malleable. Overall, legal institutions have received far less attention in the literature than democratic political institutions, and the performance of these three legal institutions measures merits further research. Further, since legal institutions are not {\it tautologically} related to repression they represent a more fruitful path for future research than additional studies of democracy and repression, at least for studies using the data we employ. 
+
+One rather surprising result was the excellent performance of the youth bulges measure used by \citet{NordasDavenport2013}. The theoretical reason for the relationship between a large per capita youth population and repression is preemptive action, on the part of the government, to prevent large-scale rebellion. The strength of this result suggests that demographic factors beyond mere population size should be more closely examined in the future. 
+
+A final point is that prediction {\it per se} was not our explicit goal. If it was, there are several ways we could improve the accuracy of these models. We mention above the improved accuracy that would likely result from the inclusion of a lagged dependent variable. More complicated strategies for modeling temporal dynamics may also be helpful,\footnote{See, e.g., \citep{Brandtetal2011}} though data on repression are usually collected at a high level of temporal aggregation. Mixture models, such as ``zero-inflated'' models, offer another promising approach \citep[See, e.g.][]{Bagozzietal2013,Bagozzi2013}. Also, the estimators we use treat these observations as independent, which is standard practice in the literature, but using a model that more realistically accounts for the structure of the data would undoubtedly result in better predictions.\footnote{E.g., mixed effects models would markedly improve our predictions. See, e.g. the modeling strategy presented in \citet{Wardetal2012}.} Most importantly, we wish to stress that the predictive ability of theoretically motivated covariates should be used more often to evaluate the accuracy of theoretical explanations for government violence.
+
+\newpage
+\begin{singlespace}
+\bibliographystyle{apsr}
+\bibliography{hill_jones_hr}
+\end{singlespace}
+
+\appendix
+\section{Appendix: Data Descriptions}
+
+{\sf Make sure we cite it all, too.}
+
+\end{document}
