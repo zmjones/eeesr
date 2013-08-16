@@ -3,9 +3,10 @@ set.seed(1987)
 CORES <- 8
 CV_FOLD <- 10
 CV_ITER <- 1000
+MI_ITER <- 5
 
 pkgs <- c("plyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
-          "countrycode", "foreign", "rms", "multicore", "party")
+          "countrycode", "foreign", "rms", "multicore", "party", "mice")
 invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
                  install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
 
