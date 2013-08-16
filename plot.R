@@ -81,15 +81,15 @@ PlotCV(cv[[12]], "cv-pts-ols", "Political Terror Scale (OLS)", "RMSE")
 PlotCV(cv[[13]], "cv-cwar-physint", "Physical Integrity Index (OLS)", "RMSE")
 PlotCV(cv[[14]], "cv-cwar-pts-ols", "Physical Integrity Index (OLS)", "RMSE")
 
-PlotImp(imp[[1]], "Disappearances, Importance and Significance",
+PlotImp(imp[[1]], "Disappearances, Importance and Significance (LRM)",
         "disap-imp-sig", ivar.labels, pval[[1]])
-PlotImp(imp[[2]], "Killings, Importance and Significance",
+PlotImp(imp[[2]], "Killings, Importance and Significance (LRM)",
         "kill-imp-sig", ivar.labels, pval[[2]])
-PlotImp(imp[[3]], "Political Imprisonment, Importance and Significance",
+PlotImp(imp[[3]], "Political Imprisonment, Importance and Significance (LRM)",
         "polpris-imp-sig", ivar.labels, pval[[3]])
-PlotImp(imp[[4]], "Torture, Importance and Significance",
+PlotImp(imp[[4]], "Torture, Importance and Significance (LRM)",
         "tort-imp-sig", ivar.labels, pval[[4]])
-PlotImp(imp[[5]], "Political Terror Scale, Importance and Significance",
+PlotImp(imp[[5]], "Political Terror Scale, Importance and Significance (LRM)",
         "pts-imp-sig", ivar.labels, pval[[5]])
-PlotImp(imp[[6]], "Physical Integrity Index, Importance and Significance",
+PlotImp(imp[[6]], "Physical Integrity Index, Importance and Significance (OLS)",
         "physint-imp-sig", ivar.labels, pval[[6]])
