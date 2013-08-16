@@ -40,15 +40,17 @@ lrm.pval <- lapply(lrm.vars, function(x)
                    lapply(seq(1, MI_ITER), function(z)
                    lapply(specs, function(y)
                    lrm((df.mi[[z]][, x] ~ model.matrix(as.formula(y), df.mi[[z]])[, -1])))))
-
-
-lrm.pval <- lapply(lrm.pval, function(x) lapply(x, function(y) do.call(rbind, y)))
 lrm.pval <- lapply(lrm.pval, function(x)
                    lapply(x, function(z)
                    lapply(z, function(y)
                    1 - pchisq((y$coefficients / sqrt(diag(y$var)))^2, 1))))
-lrm.pval <- lapply(lrm.pval, function(x) ldply(x, function(y) y[length(y)])[, 1])
-ols.pval <- unlist(lapply(specs, function(y) as.numeric(summary(lm(as.integer(df[, "physint"]) ~
-                    model.matrix(as.formula(y), df)[, -1]))$coefficients[, 4])[4]))
-ols.pval <- list(ols.pval)
+lrm.pval <- lapply(lrm.pval, function(x)
+                   lapply(x, function(z)
+                   sapply(z, function(y) as.numeric(y[length(y)]))))
+lrm.pval <- lapply(lrm.pval, function(x) rowMeans(do.call(cbind, x)))
+
+ols.pval <- lapply(seq(1, MI_ITER), function(x) unlist(lapply(specs, function(y)
+                   as.numeric(summary(lm(as.integer(df.mi[[x]][, "physint"]) ~
+                   model.matrix(as.formula(y), df.mi[[x]])[, -1]))$coefficients[, 4])[4])))
+ols.pval <- list(rowMeans(do.call(cbind, ols.pval)))
 pval <- c(lrm.pval, ols.pval)
