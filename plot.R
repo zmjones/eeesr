@@ -8,7 +8,7 @@ PlotAll <- function(df, file.prefix, title) {
   p <- p + geom_hline(y = 0, linetype = "dashed")
   p <- p + labs(x = "Model Specification", y = "Coefficient", title = title)
   p <- p + coord_flip() + theme_bw()
-  p <- p + theme(plot.margin = unit(c(.1, .1, .1, .1), "in"))
+  p <- p + theme(plot.margin = unit(rep(PLOT_BORDER, 4), "in"))
   ggsave(paste0("figures/", file.prefix, ".png"), plot = p, width = 6, height = 6)
 }
 
@@ -26,7 +26,7 @@ PlotCV <- function(df, file.prefix, title, ylab) {
   p <- p + geom_rect(aes(xmin = pos - .5, xmax = pos + .5, ymin = -Inf, ymax = Inf), alpha = .01)
   p <- p + theme_bw() + coord_flip()
   p <- p + labs(title = title, y = ylab, x = "Model Specification")
-  p <- p + theme(plot.margin = unit(c(.1, .1, .1, .1), "in"))
+  p <- p + theme(plot.margin = unit(rep(PLOT_BORDER, 4), "in"))
   ggsave(paste("./figures/", file.prefix, ".png", sep = ""), plot = p, width = 6, height = 6)
 }
 
@@ -40,7 +40,7 @@ PlotImp <- function(var.imp, title, file.prefix, rnames, pval) {
   p <- p + geom_bar(stat = "identity")
   p <- p + labs(x = "Variable", y = "Importance", title = title)
   p <- p + coord_flip() + theme_bw()
-  p <- p + theme(plot.margin = unit(c(.1, .1, .1, .1), "in"))
+  p <- p + theme(plot.margin = unit(rep(PLOT_BORDER, 4), "in"))
   ggsave(paste0("figures/", file.prefix, ".png"), plot = p, width = 6, height = 6)
 }
 

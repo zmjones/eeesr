@@ -4,6 +4,7 @@ CORES <- 8
 CV_FOLD <- 10
 CV_ITER <- 1000
 MI_ITER <- 5
+PLOT_BORDER <- .15
 
 pkgs <- c("plyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
           "countrycode", "foreign", "rms", "multicore", "party", "mice")
