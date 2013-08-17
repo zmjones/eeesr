@@ -1,4 +1,4 @@
-repo: data/rep.csv setup.Rout all.Rout cv.Rout imp.Rout plot.Rout hill_jones_hr.pdf clean_tex
+repo: data/rep.csv setup.Rout mi.Rout all.Rout cv.Rout imp.Rout plot.Rout hill_jones_hr.pdf clean_tex
 
 data/rep.csv: data.R
 	R CMD BATCH --no-save data.R
@@ -6,7 +6,7 @@ data/rep.csv: data.R
 setup.Rout: setup.R
 	R CMD BATCH setup.R
 
-mi.Rout: mi.R
+mi.Rout: mi.R setup.R
 	R CMD BATCH mi.R
 
 all.Rout: all.R setup.R
