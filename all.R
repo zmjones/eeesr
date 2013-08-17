@@ -35,6 +35,7 @@ all <- lapply(all, function(x) lapply(x, function(y)
               CleanAll(y, ivar.labels[!(ivar.labels %in% "Civil War")])))
 all <- lapply(all, function(x) do.call(rbind, x))
 all <- lapply(all, function(x) ddply(x[, -3], .(x$spec), colMeans))
+all <- lapply(all, function(x) {colnames(x)[1] <- "spec"; return(x)})
 
 lrm.pval <- lapply(lrm.vars, function(x)
                    lapply(seq(1, MI_ITER), function(z)
