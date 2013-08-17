@@ -6,6 +6,9 @@ data/rep.csv: data.R
 setup.Rout: setup.R
 	R CMD BATCH setup.R
 
+mi.Rout: mi.R
+	R CMD BATCH mi.R
+
 all.Rout: all.R setup.R
 	R CMD BATCH all.R
 
