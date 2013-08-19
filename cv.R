@@ -1,4 +1,4 @@
-invisible(lapply(c("rms", "multicore"), require, character.only = TRUE))
+invisible(lapply(c("rms", "multicore", "plyr"), require, character.only = TRUE))
 options(showprogress = FALSE)
 
 CVrms <- function(response, input, B, R, model) {
