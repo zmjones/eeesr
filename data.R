@@ -95,6 +95,10 @@ youth <- read.dta("./data/youth_bulge.dta")[, c(2:3,8)]
 youth <- youth[youth$year >= 1981 & youth$year <= 1999, ]
 names(youth)[1] <- "ccode"
 
+mdavis <- read.dta("./data/murdie_davis.dta")[, c(1,2,16)]
+mdavis <- mdavis[mdavis$year >= 1981 & mdavis$year <= 1999, ]
+names(mdavis)[2:3] <- c("ccode", "hro_shaming")
+
 df <- join(paradox, polity, type = "left")
 df <- join(df, ciri, type = "left")
 df <- join(df, pts, type = "left")
@@ -113,6 +117,7 @@ df <- join(df, sb, type = "left")
 df <- join(df, cat, type = "left")
 df <- join(df, cpr, type = "left")
 df <- join(df, youth, type = "left")
+df <- join(df, mdavis, type = "left")
 
 df$cat_ratify[is.na(df$cat_ratify)] <- 0
 df$cpr_ratify[is.na(df$cpr_ratify)] <- 0
@@ -125,10 +130,11 @@ df$cwar <- ifelse((df$type == 3 | df$type == 4) & df$cumint == 1, 1, 0)
 df$iwar <- ifelse(df$type == 2 & df$cumint == 1, 1, 0)
 df$rentspc <- log(df$rentspc + 1)
 df$trade_gdp <- log(df$trade_gdp)
-df$execrlc[df$exerclc == -999] <- NA
+df$execrlc[df$execrlc == -999] <- NA
 
 df <- aggregate(df, by = list(df$ccode, df$year), max)[, -c(1:2)]
 df <- ddply(df, .(ccode), transform, ainr_lag = c(NA, ainr[-length(ainr)]),
-            aibr_lag = c(NA, aibr[-length(aibr)]), avmdia_lag = c(NA, avmdia[-length(avmdia)]))
-df <- df[!is.na(df$physint), -c(16,19:21,25:27)]
+            aibr_lag = c(NA, aibr[-length(aibr)]), avmdia_lag = c(NA, avmdia[-length(avmdia)]),
+            hro_shaming_lag = c(NA, hro_shaming[-length(hro_shaming)]))
+df <- df[!is.na(df$physint), -c(16,19:21,25:27,43)]
 write.csv(df, "./data/rep.csv", row.names = FALSE)
