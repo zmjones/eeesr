@@ -14,9 +14,9 @@ PlotAll <- function(df, file.prefix, title) {
 
 PlotCV <- function(df, file.prefix, title, ylab) {
   if (grepl("LRM", title))
-    df$base <- df[1, "upr"]
+    df$base <- df[grep("log GDP per cap\\.", df$spec), "upr"]
   else
-    df$base <- df[1, "lwr"]
+    df$base <- df[grep("log GDP per cap\\.", df$spec), "lwr"]
   df$spec <- reorder(df$spec, df$median)
   df$pos <- grep("log GDP per cap\\.", levels(df$spec))
   p <- ggplot(data = df, aes(x = spec, y = median, group = spec))
