@@ -79,7 +79,7 @@ PlotCV(cv[[10]], "cv-cwar-pts-lrm", "Political Terror Scale (LRM)", dxy.lab)
 PlotCV(cv[[11]], "cv-physint", "Physical Integrity Index (OLS)", "RMSE")
 PlotCV(cv[[12]], "cv-pts-ols", "Political Terror Scale (OLS)", "RMSE")
 PlotCV(cv[[13]], "cv-cwar-physint", "Physical Integrity Index (OLS)", "RMSE")
-PlotCV(cv[[14]], "cv-cwar-pts-ols", "Physical Integrity Index (OLS)", "RMSE")
+PlotCV(cv[[14]], "cv-cwar-pts-ols", "Political Terror Scale (OLS)", "RMSE")
 
 PlotImp(imp[[1]], "Disappearances, Importance and Significance (LRM)",
         "disap-imp-sig", ivar.labels, pval[[1]])
