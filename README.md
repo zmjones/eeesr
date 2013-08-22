@@ -11,4 +11,5 @@ You can clone this repository using git or [download](https://github.com/zmjones
  - `all.R` estimates models on all the data and computes p-values
  - `cv.R` cross-validates ordinal logistic regression and ols models
  - `imp.R` calculates variable importance based on random forest models
+ - `mi.R` performs multiple imputation
  - `plot.R` ...creates plots
