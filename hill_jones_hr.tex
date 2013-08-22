@@ -85,7 +85,9 @@ For models using the PTS and the aggregate CIRI index we estimate linear models,
 Somer's $D$ is closely related to Goodman and Kruskal's $\gamma$ and Kendall's $\tau$, differing only in the denominator.\footnote{Somer's $D$ is similar to the commonly used $\tau_b$, which is equal to $\frac{P - Q}{(P+Q+X_0)(P+Q+Y_0)}$, where $Y_0$ is the number of ties in $Y$, and $\gamma$, which is equal to $\frac{P - Q}{P + Q}$.} Somer's $D$ makes a distinction between the independent and dependent variable in a bivariate distribution, correcting for ties within the independent variable. With $Y$ being treated as the independent variable it is denoted $D_{xy}$. 
 Specifically:
 $$D_{xy} = \frac{P - Q}{P + Q + X_0}$$
-\noindent where $P$ is the number of concordant pairs, $Q$ is the number discordant pairs, and $X_0$ is the number of ties in $X$. This is simply a measure of association for ordinal variables, so our approach is essentially to calculate the correlation between predicted and observed values. Like all correlation coefficients, the $D$ statistic lies in the interval $[-1, 1]$, with values closer to $1$ indicating more rank agreement and values closer to $1$ indicated less rank agreement, so values closer to -1 indicate more prediction error. In the results section below we discuss how we use these performance measures to judge whether covariates add substantially to a model's predictive ability. 
+\noindent where $P$ is the number of concordant pairs, $Q$ is the number discordant pairs, and $X_0$ is the number of ties in $X$. This is simply a measure of association for ordinal variables, so our approach is essentially to calculate the correlation between predicted and observed values. Like all correlation coefficients, the $D$ statistic lies in the interval $[-1, 1]$, with values closer to $1$ indicating more rank agreement and values closer to $1$ indicated less rank agreement, so values closer to -1 indicate more prediction error. In the results section below we discuss how we use these performance measures to judge whether covariates add substantially to a model's predictive ability.
+
+Many of the variables of interest to us have substantial missigness. Since the assumption that the missigness in each variable occurs at random is implausible, we prefer model based imputation of the missing values. We perform five imputations of the missing values using a combination of classification trees and the random indicator method \citep{buuren2011mice,jolani2012}. The random indicator is designed to deal with data that is not missing at random, that is, when the values of the variable with missingness are related to the probability of missingness. Imputing data that is not missing at random (NMAR) as if it is missing at random (MAR) may skew the distribution of the variable, biasing results. Formally, for NMAR data, $\text{Pr}(Y|X, R=1) \neq \text{Pr}(Y|X, R=0)$ if we let $Y$ be a random variable with some missingness, $R$ be the indicator function which equals 1 when the value of $Y$ is observed and 0 otherwise, and $X$ be a fully-observed covariate. The random indicator method works by first estimating a model of the probability of response $\hat{R}$ and comparing the conditional distribution of $Y$ given $R$ and $\hat{R}$. An offset $\delta_R = E(Y|R=1,\hat{R}=1) - E(Y|R=1,\hat{R}=0)$ is estimated, which, under the assumption that the variance of the missing values and the observed values of $Y$ are equal, is equivalent to $\delta_{NR} = E(Y|R=0,\hat{R}=1) - E(Y|R=0,\hat{R}=0)$ \citep{jolani2012}. Although the missingness mechanism is unknown, we use the random indicator method for all continuous covariates and classification trees for all binary, ordinal, or categorical covariates (excluding Polity and its components, which are imputed using the random indicator method). The distribution of the imputed and observed values for all variables with missingness can be found in Figure \ref{fig:mi}, in the Appendix.
 
 For the random forests, variable importance is assessed using an unscaled permutation test which measures the mean decrease in classification performance after permuting each element of the set of predictors $X_j$ over all trees in the forest. Permuting important variables should result in a systematic decrease in classification accuracy, whereas permuting unimportant variables should result in a random decrease, or no decrease, in classification accuracy.\footnote{The measure of classification accuracy we use here differs from the approach we use to assess variable importance with the ordinal logit models. Here we use a sum of linear statistics, as described in \citet{hothorn2006unbiased}. A full description of the splitting criteria (an association test) is beyond the scope of this article.} The variable importance scores do not measure the importance of the variable conditional (they measure marginal importance) on the importance of the other predictors, thus scores can be confounded by correlations between predictors. Although it is possible in principle to conduct a conditional permutation test, such a test is computationally infeasible given the large number of predictors and observations in this study. Figure \ref{fig:cor-cov} shows a correlation matrix of all the predictors used in this study. Although there are some highly correlated pairs, the covariates are not so highly correlated as to make this quasi-experiment uninformative. Notable are the correlations between Polity and its components, as well as those between the media covariates from \citet{RonRamosRodgers2005}. Youth bulges are negatively correlated with Polity and its components, while the INGO measure is positively correlated with Polity. 
 
@@ -95,10 +97,11 @@ For the random forests, variable importance is assessed using an unscaled permut
 \label{fig:cor-cov}
 \end{figure}
 
-Our explanatory variables are drawn from the literature. We use indicators of concepts that are ``usual suspect'' covariates (i.e., standard control variables) as well as indicators for concepts whose relationships with repression are less well-established. Table \ref{vars} lists the measures used below and the sources from which they were obtained. Full descriptions of these data can be found in the appendix. In our cross-validation analysis we assess the increase in predictive validity which results from adding each variable to two different baseline models: one that include only (the natural logs of) GDP per capita and population size, and another that includes both of these variables and an indicator of civil war from the UCDP/PRIO armed conflict data set \citep{ThemnerWallensteen2012}.\footnote{We employ the measure of ``high-intensity'' conflict, i.e. conflict producing $\geq$ 1000 annual battle-related deaths, as this measure performs much better in cross-validation than the ``low-intensity'' measure, which uses a death threshold of 25.}
+Our explanatory variables are drawn from the literature. We use indicators of concepts that are ``usual suspect'' covariates (i.e., standard control variables) as well as indicators for concepts whose relationships with repression are less well-established. Table \ref{tab:vars} lists the measures used below and the sources from which they were obtained. Full descriptions of these data can be found in the appendix. In our cross-validation analysis we assess the increase in predictive validity which results from adding each variable to two different baseline models: one that include only (the natural logs of) GDP per capita and population size, and another that includes both of these variables and an indicator of civil war from the UCDP/PRIO armed conflict data set \citep{ThemnerWallensteen2012}.\footnote{We employ the measure of ``high-intensity'' conflict, i.e. conflict producing $\geq$ 1000 annual battle-related deaths, as this measure performs much better in cross-validation than the ``low-intensity'' measure, which uses a death threshold of 25.}
 
 \begin{table}[htbp!] 
-\caption{Measures and Sources} \label{vars}
+\caption{Measures and Sources} 
+\label{tab:vars}
 \centering
 \begin{tabular}{ll}
 Measure & Source \\
@@ -145,15 +148,15 @@ CAT Ratification & UN website via {\tt \href{http://github.com/zmjones/untreatie
 
 Several points about our data are worth mentioning. First, we do not include a lagged dependent variable in any of our models, which flaunts a convention in the literature.\footnote{This seems to have become standard practice as a result of a significant coefficient for a lagged dependent variable in \citet{PoeTate1994}.} We do this because, frankly, we think results for this variable would not be terribly interesting. Our purpose is not to build the best possible predictive model of state repression, but rather to assess the veracity of different theoretical explanations for repression by seeing how well theoretically motivated covariates improve a model's predictive power. While inclusion of a lagged dependent variable would almost undoubtedly serve our interest if prediction alone was our goal, it would not tell us very much about the accuracy of existing explanations for repression. 
 
-Second, for several of the concepts listed in Table \ref{vars} we use multiple measures. These include our measure of democracy, the Polity IV scale \citep{MarshallJaggers2009}, for which we employ both the commonly used ``democracy minus autocracy'' scale, as well as each of the democracy components. One study analyzing the Polity data found that the aggregated scale primarily reflects the ``executive constraints'' subcomponent \citep{GleditschWard1997}, and studies of repression have found that some of the Polity subcomponents are more strongly related to repression than others \citep{Keith2002PRQ, BDMetal2005}. We also employ multiple measures of INGO ``shaming,'' which come from \citet{RonRamosRodgers2005} and were employed by \citet{HafnerBurton2008}. These are counts of the number of Amnesty International press releases and background reports issued about a particular country during a given year. These variables are all lagged by one year. The constitutional protection data from \citet{KeithTatePoe2009} also includes multiple measures, all found to be statistically significant in regressions using the PTS: provisions for a fair trial, provisions for a public trial, provisions stating that the decisions of high/constitutional courts are final, and provisions which require legislative approval to suspend constitutional liberties. 
+Second, for several of the concepts listed in Table \ref{tab:vars} we use multiple measures. These include our measure of democracy, the Polity IV scale \citep{MarshallJaggers2009}, for which we employ both the commonly used ``democracy minus autocracy'' scale, as well as each of the democracy components. One study analyzing the Polity data found that the aggregated scale primarily reflects the ``executive constraints'' subcomponent \citep{GleditschWard1997}, and studies of repression have found that some of the Polity subcomponents are more strongly related to repression than others \citep{Keith2002PRQ, BDMetal2005}. We also employ multiple measures of INGO ``shaming,'' which come from \citet{RonRamosRodgers2005} and were employed by \citet{HafnerBurton2008}. These are counts of the number of Amnesty International press releases and background reports issued about a particular country during a given year. These variables are all lagged by one year. The constitutional protection data from \citet{KeithTatePoe2009} also includes multiple measures, all found to be statistically significant in regressions using the PTS: provisions for a fair trial, provisions for a public trial, provisions stating that the decisions of high/constitutional courts are final, and provisions which require legislative approval to suspend constitutional liberties. 
 
-Finally, past results for a few of the covariates in Table \ref{vars} are rather mixed. These are the measures of ``shaming'' by INGOs and Western media, and measures of ratification for two core UN human rights conventions: the International Covenant on Civil and Political Rights (ICCPR), and the Convention Against Torture (CAT). \citet{HafnerBurton2008} finds that shaming by Amnestiy International (AI) is actually {\it positively} associated with repression, while shaming by Western media bears no relationship to repression. A more recent study by \citet{MurdieDavis2012} employs data on shaming by many INGOs rather than AI only, and finds a negative relationship between NGO shaming and repression conditional on NGO presence and ``shaming'' by other actors (such as governments). Though these data are available for use, they cover a relatively short time period and their inclusion would require us to drop so many observations as to make the cross-validation analysis infeasible. Thus we employ only the measures used by \citet{HafnerBurton2008} because of the unexpected, positive, and statistically significant relationship discovered in that study, as well as for practical reasons. With respect to the human rights treaties data, we employ these indicators because of similar unexpected, statistically significant findings in the literature, and because we believe the volume of recent work on this topic justifies the inclusion of human rights treaty ratification. In the next section we discuss the results of our cross-validation quasi-experiment.
+Finally, past results for a few of the covariates in Table \ref{tab:vars} are rather mixed. These are the measures of ``shaming'' by INGOs and Western media, and measures of ratification for two core UN human rights conventions: the International Covenant on Civil and Political Rights (ICCPR), and the Convention Against Torture (CAT). \citet{HafnerBurton2008} finds that shaming by Amnestiy International (AI) is actually {\it positively} associated with repression, while shaming by Western media bears no relationship to repression. A more recent study by \citet{MurdieDavis2012} employs data on shaming by many INGOs rather than AI only, and finds a negative relationship between NGO shaming and repression conditional on NGO presence and ``shaming'' by other actors (such as governments). We employ these data as well as the measures used by \citet{HafnerBurton2008} because of the unexpected, positive, and statistically significant relationship discovered in that study, as well as for practical reasons. With respect to the human rights treaties data, we employ these indicators because of similar unexpected, statistically significant findings in the literature, and because we believe the volume of recent work on this topic justifies the inclusion of human rights treaty ratification. In the next section we discuss the results of our cross-validation quasi-experiment.
 
 \subsection{Results}
 
-For our cross-validation analysis, we adopted the following rule to determine whether the inclusion of a covariate is justified: if the lower bound of the prediction error for the model including that covariate is above the upper bound of the prediction error for the baseline model, then the covariate should be included.\footnote{Since higher values of Somer's $D$ indicate more predictive power, this is the rule for the ordered logit models. For RMSE lower values indicate better predictions, so the rule is reversed, i.e. the upper bound of the model which includes the covariate in question should be below the lower bound for the baseline model.} This is a rather strict rule, but we feel it is justified since we are evaluating the performance of models which include the covariate in question against models that are very stripped-down relative to those common in the literature. Figures \ref{cv-physint}-\ref{cv-cwar-kill} display the median prediction error (shown as dots) as well as the upper and lower bound of the error (shown as lines) for each model we estimate.\footnote{Recall that the data were randomly divided into 10 folds 1000 times for each model.} The models are sorted by the median prediction error from low to high, with a dashed line placed at the upper bound (or lower bound, depending on the discrepancy statistic) of the baseline model. The grey, horizontal bands in each figure highlight the baseline models. 
+For our cross-validation analysis, we adopted the following rule to determine whether the inclusion of a covariate is justified: if the lower bound of the prediction error for the model including that covariate is above the upper bound of the prediction error for the baseline model, then the covariate should be included.\footnote{Since higher values of Somer's $D$ indicate more predictive power, this is the rule for the ordered logit models. For RMSE lower values indicate better predictions, so the rule is reversed, i.e. the upper bound of the model which includes the covariate in question should be below the lower bound for the baseline model.} This is a rather strict rule, but we feel it is justified since we are evaluating the performance of models which include the covariate in question against models that are very stripped-down relative to those common in the literature. Figures \ref{fig:cv-physint}-\ref{fig:cv-cwar-kill} display the median prediction error (shown as dots) as well as the upper and lower bound of the error (shown as lines) for each model we estimate.\footnote{Recall that the data were randomly divided into 10 folds 1000 times for each model.} The models are sorted by the median prediction error from low to high, with a dashed line placed at the upper bound (or lower bound, depending on the discrepancy statistic) of the baseline model. The grey, horizontal bands in each figure highlight the baseline models. 
 
-The first set of figures (\ref{cv-physint}-\ref{cv-kill}) show the consequences of adding different covariates to a model that includes only the natural logs of GDP per capita and population. A passing glance at these figures immediately conveys that civil conflict, for most measures of repression, adds much more predictive power to this baseline model than any other covariate examined here. This is consistent with the observation that governments respond to violent dissent with repression, a phenomenon one scholar \citep{Davenport2007AR} has termed the ``law of coercive response.'' The fact that this relationship is labeled a ``law'' gives some indication of its regularity. We return to this result in the discussion section below. 
+The first set of figures (\ref{fig:cv-physint}-\ref{fig:cv-kill}) show the consequences of adding different covariates to a model that includes only the natural logs of GDP per capita and population. A passing glance at these figures immediately conveys that civil conflict, for most measures of repression, adds much more predictive power to this baseline model than any other covariate examined here. This is consistent with the observation that governments respond to violent dissent with repression, a phenomenon one scholar \citep{Davenport2007AR} has termed the ``law of coercive response.'' The fact that this relationship is labeled a ``law'' gives some indication of its regularity. We return to this result in the discussion section below. 
 
 Clearly civil war predicts repression better than nearly all of the other covariates, but there are exceptions to this pattern. For the political imprisonment component of the CIRI physical integrity index, civil war is outperformed by the aggregated Polity scale as well as all of the components of the democracy scale, particularly the ``parcomp'' component. This latter result is consistent with previous studies \citep{Keith2002PRQ,BDMetal2005}, though no study we are aware of has noted that democracy predicts political imprisonment more accurately than it does other kinds of government violence. While the performance of Polity and its democracy components is impressive, their ability to predict the imprisonment of political opposition is partly driven by the way Polity defines and operationalizes democracy, which makes any relationship between Polity and political imprisonment tautological. We return to this point below after discussing our other results.
 
@@ -163,66 +166,66 @@ The other measure of government violence for which civil war adds less predictiv
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-physint.png}
 \caption{Root mean squared error (RMSE) over 1000 10-fold cross-validation iterations using $\log \text{GDP per capita} + \log \text{Population}$ as the base model specification (indicated by the grey band on the $y$-axis) for the CIRI physical integrity index, which ranges from 0 to 9. All other rows are models including this base specification along with the variable indicated on the $y$-axis. Since the fit statistic under consideration is RMSE, better fit is indicated by smaller RMSE. The dashed line indicates the lower bound of the fit of the base model.}
-\label{cv-physint}
+\label{fig:cv-physint}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-pts-ols.png}
 \caption{}
-\label{cv-pts-ols}
+\label{fig:cv-pts-ols}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-pts-lrm.png}
 \caption{Somer's $D_{xy}$, a rank correlation coefficient, over 1000 10-fold cross-validation iterations using $\log \text{GDP per capita} + \log \text{Population}$ as the base model specification (indicated by the grey band on the $y$-axis) for the Political Terror Scale (PTS), which ranges from 0 to 5. All other rows are models including this base specification along with the variable indicated on the $y$-axis. Since the fit statistic under consideration is Somer's $D_{xy}$, which ranges from 0 to 1, higher values indicate better fit. The dashed line indicates the upper bound of the fit of the base model.}
-\label{cv-pts-lrm}
+\label{fig:cv-pts-lrm}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-polpris.png}
 \caption{}
-\label{cv-polpris}
+\label{fig:cv-polpris}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-tort.png}
 \caption{}
-\label{cv-tort}
+\label{fig:cv-tort}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-disap.png}
 \caption{}
-\label{cv-disap}
+\label{fig:cv-disap}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-kill.png}
 \caption{}
-\label{cv-kill}
+\label{fig:cv-kill}
 \end{figure}
 
-Figures \ref{cv-cwar-physint}-\ref{cv-cwar-kill} display results from cross-validation analyses in which the baseline model now includes civil war in addition to the natural logs of GDP per capita and population. For the aggregated CIRI scale, the measure of youth bulges adds the most predictive power to the baseline model, followed by the CIRI measure of {\it de facto} judicial independence and the ``parcomp'' scale. Oil rents, which has only recently receive attention in the literature, also perform quite well in this model. Trade openness also adds predictive power to this model. For the linear model using the PTS, youth bulges, common law legal systems, ``parcomp,'' and judicial independence perform best. Results from the ordinal logit PTS model indicate that youth bulges and judicial independence perform best, followed by the ``xropen'' and ``parcomp'' Polity subcomponents, and common law legal systems. Oil rents again performs quite well. Also notable is the performance of consitutional provisions for fair trials from \citet{KeithTatePoe2009}, which performs well in all of the models using the aggregate scales. This result, along with the impressive performances of common law legal heritage and judicial independence, justifies a stronger focus on legal institutions in future studies of repression. This is another point to which we return below. 
+Figures \ref{fig:cv-cwar-physint}-\ref{fig:cv-cwar-kill} display results from cross-validation analyses in which the baseline model now includes civil war in addition to the natural logs of GDP per capita and population. For the aggregated CIRI scale, the measure of youth bulges adds the most predictive power to the baseline model, followed by the CIRI measure of {\it de facto} judicial independence and the ``parcomp'' scale. Oil rents, which has only recently receive attention in the literature, also perform quite well in this model. Trade openness also adds predictive power to this model. For the linear model using the PTS, youth bulges, common law legal systems, ``parcomp,'' and judicial independence perform best. Results from the ordinal logit PTS model indicate that youth bulges and judicial independence perform best, followed by the ``xropen'' and ``parcomp'' Polity subcomponents, and common law legal systems. Oil rents again performs quite well. Also notable is the performance of consitutional provisions for fair trials from \citet{KeithTatePoe2009}, which performs well in all of the models using the aggregate scales. This result, along with the impressive performances of common law legal heritage and judicial independence, justifies a stronger focus on legal institutions in future studies of repression. This is another point to which we return below. 
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-cwar-physint.png}
 \caption{Root mean squared error (RMSE) over 1000 10-fold cross-validation iterations using $\log \text{GDP per capita} + \log \text{Population} + \text{Civil War}$ as the base model specification (indicated by the grey band on the $y$-axis) for the CIRI physical integrity index, which ranges from 0 to 9. All other rows are models including this base specification along with the variable indicated on the $y$-axis. Since the fit statistic under consideration is RMSE, better fit is indicated by smaller RMSE. The dashed line indicates the lower bound of the fit of the base model.}
 \caption{}
-\label{cv-cwar-physint}
+\label{fig:cv-cwar-physint}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-cwar-pts-ols.png}
 \caption{}
-\label{cv-cwar-pts-ols}
+\label{fig:cv-cwar-pts-ols}
 \end{figure}
 
 \begin{figure}[!htpb]
@@ -230,34 +233,35 @@ Figures \ref{cv-cwar-physint}-\ref{cv-cwar-kill} display results from cross-vali
 \includegraphics[width=\textwidth]{./figures/cv-cwar-pts-lrm.png}
 \caption{Somer's $D_{xy}$, a rank correlation coefficient, over 1000 10-fold cross-validation iterations using $\log \text{GDP per capita} + \log \text{Population} + \text{Civil War}$ as the base model specification (indicated by the grey band on the $y$-axis) for the Political Terror Scale (PTS), which ranges from 0 to 5. All other rows are models including this base specification along with the variable indicated on the $y$-axis. Since the fit statistic under consideration is Somer's $D_{xy}$, which ranges from 0 to 1, higher values indicate better fit. The dashed line indicates the upper bound of the fit of the base model.}
 \caption{}
-\label{cv-cwar-pts-lrm}
+\label{fig:cv-cwar-pts-lrm}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-cwar-polpris.png}
 \caption{}
-\label{cv-cwar-polpris}
+\label{fig:cv-cwar-polpris}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-cwar-tort.png}
 \caption{}
+\label{fig:cv-cwar-tort}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-cwar-disap.png}
 \caption{}
-\label{cv-cwar-disap}
+\label{fig:cv-cwar-disap}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/cv-cwar-kill.png}
 \caption{}
-\label{cv-cwar-kill}
+\label{fig:cv-cwar-kill}
 \end{figure}
 
 Turning to results from the individual CIRI components, the political imprisonment models are largely consistent with those above: the Polity scale and its democracy subcomponents peform best, though the aggregated scale outperforms all of the components, which is not true for the first baseline model. Judicial independence and fair trial provisions again add predictive power, as does oil rents. It is also worth mentioning that, for political imprisonment, measures of trade openness and military regime do well relative to the baseline model. The results pertaining to torture are very consistent with the analysis above, with judicial independence, youth bulges, and ``parcomp'' adding the most predictive validity to the baseline model. 
@@ -266,7 +270,7 @@ The other two CIRI components, which measure disappearance and extrajudicial kil
 
 11 of the 30 covariates included in the analysis failed to add predictive power to {\it any} of the baseline models. These are: ratification of the ICCPR, left government, British colonial status, the three variables measuring participation in IMF and World Bank structural adjustment programs, consitutional provisions stating that high court decisions are final, constitutional provisions giving the legislature authority over declaration of states of emergency, foreign direct investment, international war, and INGO presence. That the last three of these fail to add any predictive validity to our baseline models is very surprising, and we discuss the implications of these findings below. Results are more mixed, but still weak, for PTAs with a human rights clause\footnote{This variable only adds predictive power to the aggregate scale (CIRI and PTS) linear models that do not include civil conflict}, and ratification of the CAT.\footnote{This variable only increases the power of the PTS linear model that includes civil war.}
 
-We next turn the the permutation importance measures from the random forests, which are depicted in Figures \ref{physint-imp}-\ref{kill-imp}. These figures show the covariates sorted from most important to least, and also indicate whether the coefficient for each variable achieves statistical significance in a regression model estimated using all of the available data.\footnote{We estimate an OLS model for the aggregated CIRI scale and ordinal logit models for all other dependent variables.} For the most part the results of this analysis echo those from the cross-validation: across most dependent variables, civil war, youth bulges, Polity and some of its subcomponents, and judicial independence remain among the most important predictors. As above, Polity and its various components do not do as well in the disappearance and killing models. The most notable contrasts with the cross-validation results discussed above are the performances of trade openness and INGO presence, which do very well in terms of increasing the accuracy of the model's predictions. This suggests that these variables may have an interactive or conditional relationship with measures of human rights practices. 
+We next turn the the permutation importance measures from the random forests, which are depicted in Figures \ref{fig:physint-imp}-\ref{fig:kill-imp}. These figures show the covariates sorted from most important to least, and also indicate whether the coefficient for each variable achieves statistical significance in a regression model estimated using all of the available data.\footnote{We estimate an OLS model for the aggregated CIRI scale and ordinal logit models for all other dependent variables.} For the most part the results of this analysis echo those from the cross-validation: across most dependent variables, civil war, youth bulges, Polity and some of its subcomponents, and judicial independence remain among the most important predictors. As above, Polity and its various components do not do as well in the disappearance and killing models. The most notable contrasts with the cross-validation results discussed above are the performances of trade openness and INGO presence, which do very well in terms of increasing the accuracy of the model's predictions. This suggests that these variables may have an interactive or conditional relationship with measures of human rights practices. 
 
 As a more general point, it is worth noting that statistical significance does not perfectly correlate with variable importance. There is certainly a positive correlation between the two, but clearly statistical significance is neither necessary nor sufficient for predictive validity. For example, trade openness is not significant in the aggregate CIRI model, the killing model, nor the disappearance model, but is judged to add more predictive power to these models than all but a few other covariates. As another example, though PTAs with human rights clauses are statistically significant in {\em every}  model, including this measure adds very little predictive power to any of the models. This general point is in line with the findings at least one previous study \citep{Wardetal2010}, but bears mentioning as it is not widely appreciated. 
 
@@ -274,42 +278,42 @@ As a more general point, it is worth noting that statistical significance does n
 \centering
 \includegraphics[width=\textwidth]{./figures/physint-imp-sig.png}
 \caption{Variable importance scores from a random forest and subsampling algorithm using conditional inference trees. Variable importance is the mean decrease in classification accuracy from removal of the indicated variable averaged across all trees. The $p$-value from a ordinary least squares regression is indicated as well, based on commonly used cutoffs for statistical significance.}
-\label{physint-imp}
+\label{fig:physint-imp}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/pts-imp-sig.png}
 \caption{Variable importance scores from a random forest and subsampling algorithm using conditional inference trees. Variable importance is the mean decrease in classification accuracy from removal of the indicated variable averaged across all trees. The $p$-value from a proportional odds logistic regression is indicated as well, based on commonly used cutoffs for statistical significance.}
-\label{pts-imp}
+\label{fig:pts-imp}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/polpris-imp-sig.png}
 \caption{}
-\label{polpris-imp}
+\label{fig:polpris-imp}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/disap-imp-sig.png}
 \caption{}
-\label{disap-imp}
+\label{fig:disap-imp}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/tort-imp-sig.png}
 \caption{}
-\label{tort-imp}
+\label{fig:tort-imp}
 \end{figure}
 
 \begin{figure}[!htpb]
 \centering
 \includegraphics[width=\textwidth]{./figures/kill-imp-sig.png}
 \caption{}
-\label{kill-imp}
+\label{fig:kill-imp}
 \end{figure}
 
 \section{Discussion/Conclusion}
@@ -339,6 +343,15 @@ A final point is that prediction {\it per se} was not our explicit goal. If it w
 \end{singlespace}
 
 \appendix
+\section{Appendix}
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{./figures/mi.png}
+\caption{The distribution of observed (shown in blue) and imputed (shown in red) values for all covariates with missingness. Categorial variables are imputed using classification trees and continuous variables are imputed using the random indicator method.}
+\label{fig:mi}
+\end{figure}
+
 \section{Appendix: Data Descriptions}
 
 {\sf Make sure we cite it all, too.}
