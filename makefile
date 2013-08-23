@@ -9,16 +9,16 @@ setup.Rout: setup.R
 mi.Rout: mi.R setup.R
 	R CMD BATCH mi.R
 
-all.Rout: all.R setup.R
+all.Rout: all.R setup.R mi.R
 	R CMD BATCH all.R
 
-cv.Rout: cv.R setup.R
+cv.Rout: cv.R setup.R mi.R
 	R CMD BATCH cv.R
 
 imp.Rout: imp.R setup.R
 	R CMD BATCH imp.R
 
-plot.Rout: plot.R all.R cv.R imp.R
+plot.Rout: plot.R all.R cv.R imp.R mi.R
 	R CMD BATCH plot.R
 
 TEXCMD := pdflatex -interaction=batchmode
