@@ -22,24 +22,24 @@ CleanAll <- function(x, vars) {
 }
 
 all.lrm <- lapply(lrm.vars, function(x)
-                  lapply(seq(1, MI_ITER), function(z) lapply(specs.cwar, function(y)
+                  lapply(seq(1, MI_ITER), function(z) lapply(specs[-1], function(y)
                   Frms(df.mi[[z]][, x], model.matrix(as.formula(y), df.mi[[z]])[, -1],
                   model = "lrm", var = str_extract(y, "\\b[a-z|_|(|)|0-9]+$")))))
 all.ols <- lapply(ols.vars, function(x)
-                  lapply(seq(1, MI_ITER), function(z) lapply(specs.cwar, function(y)
+                  lapply(seq(1, MI_ITER), function(z) lapply(specs[-1], function(y)
                   Frms(as.integer(df.mi[[z]][, x]), model.matrix(as.formula(y), df.mi[[z]])[, -1],
                   model = "ols", var = str_extract(y, "\\b[a-z|_|(|)|0-9]+$")))))
 all <- c(all.lrm, all.ols)
 all <- lapply(all, function(x) lapply(x, function(y) data.frame(do.call(rbind, y))))
 all <- lapply(all, function(x) lapply(x, function(y)
-              CleanAll(y, ivar.labels[!(ivar.labels %in% "Civil War")])))
+              CleanAll(y, ivar.labels)))
 all <- lapply(all, function(x) do.call(rbind, x))
 all <- lapply(all, function(x) ddply(x[, -3], .(x$spec), colMeans))
 all <- lapply(all, function(x) {colnames(x)[1] <- "spec"; return(x)})
 
 lrm.pval <- lapply(lrm.vars, function(x)
                    lapply(seq(1, MI_ITER), function(z)
-                   lapply(specs, function(y)
+                   lapply(specs[-1], function(y)
                    lrm((df.mi[[z]][, x] ~ model.matrix(as.formula(y), df.mi[[z]])[, -1])))))
 lrm.pval <- lapply(lrm.pval, function(x)
                    lapply(x, function(z)
@@ -49,8 +49,7 @@ lrm.pval <- lapply(lrm.pval, function(x)
                    lapply(x, function(z)
                    sapply(z, function(y) as.numeric(y[length(y)]))))
 lrm.pval <- lapply(lrm.pval, function(x) rowMeans(do.call(cbind, x)))
-
-ols.pval <- lapply(seq(1, MI_ITER), function(x) unlist(lapply(specs, function(y)
+ols.pval <- lapply(seq(1, MI_ITER), function(x) unlist(lapply(specs[-1], function(y)
                    as.numeric(summary(lm(as.integer(df.mi[[x]][, "physint"]) ~
                    model.matrix(as.formula(y), df.mi[[x]])[, -1]))$coefficients[, 4])[4])))
 ols.pval <- list(rowMeans(do.call(cbind, ols.pval)))
