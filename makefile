@@ -1,4 +1,4 @@
-repo: data/rep.csv setup.Rout mi.Rout all.Rout cv.Rout imp.Rout plot.Rout hill_jones_hr.pdf clean_tex
+repo: data/rep.csv setup.Rout mi.Rout all.Rout cv_setup.Rout cv_lrm.Rout cv_ols.Rout cv.Rout imp.Rout plot.Rout hill_jones_hr.pdf clean_tex
 
 data/rep.csv: data.R
 	R CMD BATCH --no-save data.R
@@ -12,7 +12,16 @@ mi.Rout: mi.R setup.R
 all.Rout: all.R setup.R mi.R
 	R CMD BATCH all.R
 
-cv.Rout: cv.R setup.R mi.R
+cv_setup.Rout: cv_setup.R
+	R CMD BATCH cv_setup.R
+
+cv_lrm.Rout: cv_lrm.R cv_setup.R mi.R setup.R
+	R CMD BATCH cv_lrm.R
+
+cv_ols.Rout: cv_ols.R cv_setup.R mi.R setup.R
+	R CMD BATCH cv_ols.R
+
+cv.Rout: cv.R cv_setup.R cv_ols.R cv_lrm.R setup.R mi.R
 	R CMD BATCH cv.R
 
 imp.Rout: imp.R setup.R
