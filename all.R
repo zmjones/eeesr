@@ -2,6 +2,11 @@ invisible(lapply(c("rms", "stringr", "plyr"), require, character.only = TRUE))
 options(showprogress = FALSE)
 
 Frms <- function(response, input, model, var) {
+  # response: dependent variable (vector)
+  # input: input matrix (matrix or dataframe)
+  # model: string vector (length 1), either "lrm" or "ols"
+  # var: string vector (length 1) which is to be extracted
+  # returns: vector (length 2) containing coefficient and standard error of "var"
   if (model == "lrm")
     fit <- lrm(response ~ input)
   else if (model == "ols")
@@ -16,6 +21,9 @@ Frms <- function(response, input, model, var) {
 }
 
 CleanAll <- function(x, vars) {
+  # x: dataframe to be cleaned
+  # vars: list of specification labels to be added as a column of x
+  # returns: cleaned up dataframe with a column labeled "spec" and appropriate column labels
   colnames(x) <- c("coef", "se")
   x$spec <- vars
   return(x)

@@ -47,8 +47,6 @@ PlotImp <- function(var.imp, title, file.prefix, rnames, pval) {
 plot.df <- df[, !colnames(df) %in% c("ccode", "year", ciri.vars,
                                      "physint", "amnesty", "gdppc", "pop")]
 colnames(plot.df) <- ivar.labels
-max.cor <- apply(apply(cor(plot.df), 1, function(x) ifelse(x == 1, NA, x)), 1,
-                 function(x) max(x, na.rm = TRUE))
 p <- ggplot(data = melt(cor(plot.df)), aes(x = Var1, y = Var2, fill = value))
 p <- p + geom_tile()
 p <- p + scale_fill_gradient2(space = "Lab", name = "Correlation")
