@@ -12,20 +12,14 @@ CVrms <- function(response, input, B, R, model) {
   return(cv)
 }
 
-CleanCV <- function(cv) {
-  cv <- as.data.frame(t(apply(cv, 1, function(x)
-                      quantile(x, probs = c(.025, .5, .975)))))
-  colnames(cv) <- c("lwr", "median", "upr")
-  cv$spec <- row.names(cv)
-  row.names(cv) <- NULL
-  return(cv)
-}
-
-CallCV <- function(data, specs, depvar, mtype, rnames) {
-  cv <- CleanCV(t(as.data.frame(mclapply(specs, function(x)
-                CVrms(depvar, model.matrix(as.formula(x), data)[, -1],
-                CV_FOLD, CV_ITER, model = mtype), mc.cores = CORES))))
-  cv$spec <- rnames
+CleanCV <- function(cv, labels) {
+  cv <- lapply(cv, function(x) lapply(x, function(y) do.call(rbind, y)))
+  cv <- lapply(cv, function(x) as.data.frame(do.call(rbind, x)))
+  cv <- lapply(cv, function(x) {
+    x$spec <- labels
+    x <- ddply(x, .(spec), function(y) quantile(unlist(y[, -ncol(y)]), probs = c(.025, .5, .975)))
+    return(x)
+  })
   return(cv)
 }
 
