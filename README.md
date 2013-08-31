@@ -13,6 +13,6 @@ You can clone this repository using git or [download](https://github.com/zmjones
  - `mi.R` (30 min) performs multiple imputation
  - `all.R`(30 sec) estimates models on all the (imputed) data and computes p-values
  - `cv_setup.R` sets up functions and variables for cross-validation procedure
- - `cv.R` () cross-validates all models and combines results
+ - `cv.R` (20 hrs) cross-validates all models and combines results
  - `imp.R` (5 min) calculates variable importance based on random forest models
  - `plot.R` creates plots

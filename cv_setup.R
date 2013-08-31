@@ -26,6 +26,7 @@ CleanCV <- function(cv, labels) {
   cv <- lapply(cv, function(x) {
     x$spec <- labels
     x <- ddply(x, .(spec), function(y) quantile(unlist(y[, -ncol(y)]), probs = c(.025, .5, .975)))
+    colnames(x) <- c("spec", "lwr", "median", "upr")
     return(x)
   })
   return(cv)
