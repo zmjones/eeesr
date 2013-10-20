@@ -32,7 +32,7 @@ PlotCV <- function(df, file.prefix, title, ylab) {
 
 PlotImp <- function(var.imp, title, file.prefix, rnames, pval) {
   sig <- sapply(pval, function(x) if (x <= .05) "yes" else "no")
-  df <- data.frame("var" = rnames, "imp" = var.imp,
+  df <- data.frame("var" = rnames, "imp" = var.imp[1, ],
                    "sig" = factor(sig, levels = c("yes", "no")))
   df$var <- reorder(factor(df$var), df$imp)
   p <- ggplot(data = df, aes(x = factor(var), y = imp, fill = sig))
@@ -49,7 +49,7 @@ plot.df <- df[, !colnames(df) %in% c("ccode", "year", ciri.vars,
 colnames(plot.df) <- ivar.labels
 p <- ggplot(data = melt(cor(plot.df)), aes(x = Var1, y = Var2, fill = value))
 p <- p + geom_tile()
-p <- p + scale_fill_gradient2(space = "Lab", name = "Correlation")
+p <- p + scale_fill_gradient2(space = "Lab", name = "Correlation", breaks = c(1, .5, 0, -.25))
 p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 p <- p + guides(fill = guide_colorbar(barwidth = .75, ticks = FALSE))
 p <- p + labs(x = NULL, y = NULL, title = "Covariate Correlations")
