@@ -381,14 +381,16 @@ Finally, our measures of UN treaty ratification status are taken from the UN web
 
 \subsection{Imputation}
 
-To impute missing values in our data we use a combination of classification trees and the random indicator method \citep{buuren2011mice,jolani2012}. The random indicator is designed to deal with data that is not missing at random, that is, when the values of the variable with missingness are related to the probability of missingness. Imputing data that is not missing at random (NMAR) as if it is missing at random (MAR) may skew the distribution of the variable, biasing results. Formally, for NMAR data, $\text{Pr}(Y|X, R=1) \neq \text{Pr}(Y|X, R=0)$ if we let $Y$ be a random variable with some missingness, $R$ be the indicator function which equals 1 when the value of $Y$ is observed and 0 otherwise, and $X$ be a fully-observed covariate. The random indicator method works by first estimating a model of the probability of response $\hat{R}$ and comparing the conditional distribution of $Y$ given $R$ and $\hat{R}$. An offset $\delta_R = E(Y|R=1,\hat{R}=1) - E(Y|R=1,\hat{R}=0)$ is estimated, which, under the assumption that the variance of the missing values and the observed values of $Y$ are equal, is equivalent to $\delta_{NR} = E(Y|R=0,\hat{R}=1) - E(Y|R=0,\hat{R}=0)$ \citep{jolani2012}. Although the missingness mechanism is unknown, we use the random indicator method for all continuous covariates and classification trees for all binary, ordinal, or categorical covariates (excluding Polity and its components, which are imputed using the random indicator method). The distribution of the imputed and observed values for all variables with missingness are shown in Figure \ref{fig:mi}.
+To impute missing values in our data we use a combination of classification trees and the random indicator method \citep{buuren2011mice,jolani2012}. The random indicator is designed to deal with data that is not missing at random, that is, when the values of the variable with missingness are related to the probability of missingness. Imputing data that is not missing at random (NMAR) as if it is missing at random (MAR) may skew the distribution of the variable, biasing results. Formally, for NMAR data, $\text{Pr}(Y|X, R=1) \neq \text{Pr}(Y|X, R=0)$ if we let $Y$ be a random variable with some missingness, $R$ be the indicator function which equals 1 when the value of $Y$ is observed and 0 otherwise, and $X$ be a fully-observed covariate. The random indicator method works by first estimating a model of the probability of response $\hat{R}$ and comparing the conditional distribution of $Y$ given $R$ and $\hat{R}$. An offset $\delta_R = E(Y|R=1,\hat{R}=1) - E(Y|R=1,\hat{R}=0)$ is estimated, which, under the assumption that the variance of the missing values and the observed values of $Y$ are equal, is equivalent to $\delta_{NR} = E(Y|R=0,\hat{R}=1) - E(Y|R=0,\hat{R}=0)$ \citep{jolani2012}. Although the missingness mechanism is unknown, we use the random indicator method for all continuous covariates and classification trees for all binary, ordinal, or categorical covariates (excluding Polity and its components, which are imputed using the random indicator method). %The distribution of the imputed and observed values for all variables with missingness are shown in Figure \ref{fig:mi}.
 
-\begin{figure}[!htpb]
-\centering
-\includegraphics[width=\textwidth]{./figures/mi.png}
-\caption{The distribution of observed (shown in blue) and imputed (shown in red) values for all covariates with missingness. Categorical variables are imputed using classification trees and continuous variables are imputed using the random indicator method.}
-\label{fig:mi}
-\end{figure}
+% \begin{figure}[!htpb]
+% \centering
+% \includegraphics[width=\textwidth]{./figures/mi.png}
+% \caption{The distribution of observed (shown in blue) and imputed (shown in red) values for all covariates with missingness. Categorical variables are imputed using classification trees and continuous variables are imputed using the random indicator method.}
+% \label{fig:mi}
+% \end{figure}
+
+\clearpage
 
 \subsection{Coefficient Estimates}
 
