@@ -1,0 +1,234 @@
+\documentclass{beamer}
+\usetheme{boxes}
+\usepackage{qtree}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\definecolor{links}{HTML}{2A1B81}
+\hypersetup{colorlinks,linkcolor=,urlcolor=links}
+
+\title{An Empirical Evaluation of Explanations for State Repression}
+\author[shortname]{Daniel W. Hill Jr. \inst{1} \and Zachary M. Jones \inst{2}}
+\institute[shortinst]{\inst{1} University of Georgia \and %
+  \inst{2} Penn State University}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{frame}{The Empirical Literature on State Repression is Prolific}
+  \begin{itemize}
+  \item Goal is to discover political, economic, social conditions related to human rights abuse
+  \item The most seminal study is Poe and Tate (1994)
+    \begin{itemize}
+    \item Democracy
+    \item Civil/international war
+    \item Economic development
+    \item Population size
+    \end{itemize}
+  \item International economic factors
+  \item Civil society/NGO activity
+  \item Domestic legal institutions
+  \item International law
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Theoretical Claims Could be Better Evaluated}
+  \begin{itemize}
+  \item Importance of theoretically relevant indicators assessed by null hypothesis significance tests
+  \item Statistical significance $\neq$ predictive power
+  \item This does not prevent overfitting
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What We Contribute}
+  \begin{itemize}
+  \item Cross-validation
+    \begin{itemize}
+    \item Does inclusion of the indicator improve out-of-sample fit? 
+    \item Assessing out-of-sample fit guards against overfitting
+    \end{itemize}
+  \item Random forests
+    \begin{itemize}
+    \item No need to choose ``baseline'' model
+    \item Allows for interactions/non-linear relationships
+    \item Shows relative importance of variables
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Cross-Validation: What Is It?}
+  \begin{itemize}
+  \item A way to assess how good a model is at predicting the outcome of interest
+  \item Split the data into $k$ folds, estimate a model on $k-1$ of the folds, and then predict the held out fold (saving the discrepancy statistic)
+  \item Do this a lot of times to make sure that the discrepancy statistic that you got for a particular iteration isn't dependent on a particular split
+  \item We use RMSE for OLS models and Somer's $D$ (a rank correlation coefficient) for the ordinal logit models
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Cross-Validation: How Do We Do It?}
+  \begin{itemize}
+  \item Dependent variables: aggregated CIRI, PTS, CIRI sub-components
+  \item Covariates: base model (two types) + variable of interest
+  \item 7 dependent variables (sort-of), 62 model specifications, 10 folds, 1000 resampling iterations, on 5 imputed data sets = 21,700,000 models estimated (ack!)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{CV Ordinal Logit: Political Imprisonment}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-polpris.png}
+\end{frame}
+
+\begin{frame}{CV Ordinal Logit: Torture}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-tort.png}
+\end{frame}
+
+\begin{frame}{CV OLS: Aggregated CIRI Index}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-cwar-physint.png}
+\end{frame}
+
+\begin{frame}{CV OLS: Political Terror Scale}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-cwar-pts-ols.png}
+\end{frame}
+
+\begin{frame}{Random Forests: Theory}
+  \begin{itemize}
+  \item Random forests are an ensemble of decision trees (we use a variation on the normal variety)
+    \begin{itemize}
+    \item Select a set of observations
+    \item Select a set of variables
+    \item Find which variable is the most strongly related to the outcome variable
+    \item Find the split in the selected variable which optimally classifies observations
+    \item Repeat until stopping criteria is met
+    \item Repeat independently for each tree in the forest
+    \end{itemize}
+  \item Predicted class based on consensus vote from all trees in the forest
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Random Forests: Variable Importance}
+  \begin{itemize}
+  \item If a variable is an important predictor, then randomly permuting its value should decrease classification/regression performance
+  \item For each variable, test the null hypothesis that $P(Y, X_j, Z) = P(Y, Z)P(X_j)$ where $Y$ is the dependent variable, $X_j$ is the variable being permuted, and $Z$ are all $X_i, i \neq j$
+  \item Conditional importance (null hypothesis: $P(Y, X_j|Z) = P(Y|Z)P(X_j|Z)$) is not computationally feasible
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Random Forests: Political Imprisonment}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/polpris-imp-sig.png}
+\end{frame}
+
+\begin{frame}{Random Forests: Torture}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/tort-imp-sig.png}
+\end{frame}
+
+\begin{frame}{What Do the Results Tell Us?}
+  \begin{itemize}
+  \item Civil war matters a lot
+  \item Democracy matters a lot, but matters a lot more for some things
+    \begin{itemize}
+    \item Some Polity components measure repression
+    \item This requires attention in the future
+    \end{itemize}
+  \item Concepts that receive far less attention matter a lot
+    \begin{itemize}
+    \item Domestic legal institutions 
+      \begin{itemize}
+      \item Judicial independence
+      \item Common law
+      \item Fair trial provisions
+      \end{itemize}
+    \item Oil rents
+    \item Youth bulges
+    \end{itemize}
+  \end{itemize} 
+\end{frame}
+
+\begin{frame}{Thanks!}
+  \begin{itemize}
+  \item Data \& code online: \url{http://github.com/zmjones/eeesr}
+  \item A draft of the paper (at \href{http://zmjones.com}{zmjones.com} or \href{http://myweb.fsu.edu/dwh06c}{myweb.fsu.edu/dwh06c}) and these slides are also online (on the PSS website or our personal sites)
+  \item Email us comments if you have any: Danny (\href{mailto:dwhill@uga.edu}{dwhill@uga.edu}), Zach (\href{mailto:zmj@zmjones.com}{zmj@zmjones.com})
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Random Forest Implementations}
+  \begin{itemize}
+  \item Decision trees are high variance estimators (hence the use of ensembles, aka random forests)
+  \item Many implementations of decision trees/random forests are biased towards variables with more possible splits (\texttt{rpart}, \texttt{randomForest} in \texttt{R}, for example)
+  \item Many implementations of random forests overfit (hence pruning after fitting)
+  \item We use random forests with conditional inference trees (via \texttt{party}, in \texttt{R})
+    \begin{itemize}
+    \item Separates variable selection and variable splitting
+    \item Uses linear statistics for selection and stopping rules 
+    \item This prevents biased variable selection and overfitting
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Covariate Missingness}
+  \begin{itemize}
+  \item Multiple Imputation Using Chained Equations (MICE)
+    \begin{itemize}
+    \item Classification and Regression Trees for categorical data
+    \item Random Indicator method for non-ignorably missing numeric data
+    \end{itemize}
+  \item Run cross-validation/random forests on each imputed data-set
+  \item Pool results, and compute summary statistics
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{CV Ordinal Logit (with Civil War): Disappearances}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-cwar-polpris.png}
+\end{frame}
+
+\begin{frame}{CV Ordinal Logit: Disappearances}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-disap.png}
+\end{frame}
+
+\begin{frame}{CV Ordinal Logit (with Civil War): Disappearances}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-cwar-disap.png}
+\end{frame}
+
+\begin{frame}{CV Ordinal Logit: Killings}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-kill.png}
+\end{frame}
+
+\begin{frame}{CV Ordinal Logit (with Civil War): Killings}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-cwar-kill.png}
+\end{frame}
+
+\begin{frame}{CV Ordinal Logit: Political Terror Scale}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-pts-lrm.png}
+\end{frame}
+
+\begin{frame}{CV Ordinal Logit (with Civil War): Political Terror Scale}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-cwar-pts-lrm.png}
+\end{frame}
+
+\begin{frame}{CV OLS: Political Terror Scale}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-pts-ols.png}
+\end{frame}
+
+\begin{frame}{CV OLS (with Civil War): Political Terror Scale}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-cwar-pts-ols.png}
+\end{frame}
+
+\begin{frame}{CV OLS: Aggregated CIRI Index}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-physint.png}
+\end{frame}
+
+\end{document}
