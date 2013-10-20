@@ -1,4 +1,4 @@
-repo: data/rep.csv setup.Rout mi.Rout all.Rout cv_setup.Rout cv.Rout imp.Rout plot.Rout hill_jones_hr.pdf clean_tex
+repo: data/rep.csv setup.Rout mi.Rout imp.Rout all.Rout cv_setup.Rout cv.Rout plot.Rout eeesr_manuscript.pdf eeesr_presentation.pdf clean_tex
 
 data/rep.csv: data.R
 	R CMD BATCH --no-save data.R
@@ -12,27 +12,30 @@ mi.Rout: mi.R setup.R
 all.Rout: all.R setup.R mi.R
 	R CMD BATCH all.R
 
+imp.Rout: imp.R setup.R
+	R CMD BATCH imp.R
+
 cv_setup.Rout: cv_setup.R
 	R CMD BATCH cv_setup.R
 
 cv.Rout: cv.R cv_setup.R setup.R mi.R
 	R CMD BATCH cv.R
 
-imp.Rout: imp.R setup.R
-	R CMD BATCH imp.R
-
 plot.Rout: plot.R all.R cv.R imp.R mi.R
 	R CMD BATCH plot.R
 
 TEXCMD := pdflatex -interaction=batchmode
-hill_jones_hr.pdf: hill_jones_hr.tex plot.Rout
-	$(TEXCMD) $<
-	bibtex *.aux
-	$(TEXCMD) $<
+# eeesr_manuscript.pdf: eeesr_manuscript.tex plot.Rout
+# 	$(TEXCMD) $<
+# 	bibtex *.aux
+# 	$(TEXCMD) $<
+# 	$(TEXCMD) $<
+
+eeesr_presentation.pdf: eeesr_presentation.tex plot.Rout
 	$(TEXCMD) $<
 
 clean_tex:
-	find . | egrep ".*((\.(aux|log|blg|bbl|out|DS_Store))|~)$$" | xargs rm
+	find . | egrep ".*((\.(aux|log|blg|bbl|out|DS_Store|nav|toc|snm))|~)$$" | xargs rm
 	rm -rf auto
 
 clean_r:
