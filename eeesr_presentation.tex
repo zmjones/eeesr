@@ -111,7 +111,6 @@
   \begin{itemize}
   \item If a variable is an important predictor, then randomly permuting its value should decrease classification/regression performance
   \item For each variable, test the null hypothesis that $P(Y, X_j, Z) = P(Y, Z)P(X_j)$ where $Y$ is the dependent variable, $X_j$ is the variable being permuted, and $Z$ are all $X_i, i \neq j$
-  \item Conditional importance (null hypothesis: $P(Y, X_j|Z) = P(Y|Z)P(X_j|Z)$) is not computationally feasible
   \end{itemize}
 \end{frame}
 
@@ -181,7 +180,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{CV Ordinal Logit (with Civil War): Disappearances}
+\begin{frame}{CV Ordinal Logit (with Civil War): Political Imprisonment}
   \centering
   \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-cwar-polpris.png}
 \end{frame}
@@ -229,6 +228,31 @@
 \begin{frame}{CV OLS: Aggregated CIRI Index}
   \centering
   \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-physint.png}
+\end{frame}
+
+\begin{frame}{CV OLS: Aggregated CIRI Index}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/cv-physint.png}
+\end{frame}
+
+\begin{frame}{Random Forests: Disapperances}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/disap-imp-sig.png}
+\end{frame}
+
+\begin{frame}{Random Forests: Killings}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/kill-imp-sig.png}
+\end{frame}
+
+\begin{frame}{Random Forests: Political Terror Scale}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/pts-imp-sig.png}
+\end{frame}
+
+\begin{frame}{Random Forests: Aggregated CIRI Index}
+  \centering
+  \includegraphics[width=\linewidth,height=.9\textheight,keepaspectratio]{./figures/physint-imp-sig.png}
 \end{frame}
 
 \end{document}
