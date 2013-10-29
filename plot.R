@@ -42,19 +42,19 @@ PlotImp <- function(var.imp, title, file.prefix, rnames, pval) {
   ggsave(paste0("figures/", file.prefix, ".png"), plot = p, width = 6, height = 6)
 }
 
-imp.vars <- colnames(df.imp)[as.logical(apply(df.imp, 2, function(x) any(is.na(x))))]
-obs <- df.imp[, imp.vars]
+mi.vars <- colnames(df.imp)[as.logical(apply(df.imp, 2, function(x) any(is.na(x))))]
+obs <- df.imp[, mi.vars]
 obs$type <- "obs"
-imp <- as.data.frame(do.call("rbind", df.mi))[, imp.vars]
+mi <- as.data.frame(do.call("rbind", df.mi))[, mi.vars]
 i <- 1
-imp <- apply(imp, 2, function(x) {
+mi <- apply(mi, 2, function(x) {
   x <- x[is.na(obs[, i])]
   i <- i + 1
   return(x)
 })
-imp <- as.data.frame(apply(imp, 2, as.numeric))
-imp$type <- "imp"
-plot.df <- as.data.frame(rbind(na.omit(obs), imp))
+mi <- as.data.frame(apply(mi, 2, as.numeric))
+mi$type <- "mi"
+plot.df <- as.data.frame(rbind(na.omit(obs), mi))
 plot.df <- melt(plot.df, id.vars = "type")
 mi.labels <- c("Polity", "Executive Compet.", "Executive Open.", "Executive Const.",
                "Participation Compet.", "log Population", "log GDP per capita",
