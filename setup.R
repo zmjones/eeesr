@@ -1,4 +1,5 @@
 set.seed(1987)
+options(showprogress = FALSE)
 
 CORES <- 8
 CV_FOLD <- 10
@@ -10,6 +11,7 @@ pkgs <- c("plyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
           "countrycode", "foreign", "rms", "multicore", "party", "mice")
 invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
                  install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
+invisible(lapply(pkgs, require, character.only = TRUE))
 
 df <- read.csv("./data/rep.csv")
 df$disap <- as.ordered(df$disap)

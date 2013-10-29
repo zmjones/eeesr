@@ -1,6 +1,3 @@
-invisible(lapply(c("rms", "multicore", "plyr"), require, character.only = TRUE))
-options(showprogress = FALSE)
-
 cv.lrm <- CleanCV(CallCV(lrm.vars, specs, "lrm"),
                   c("log GDP per cap. + log Pop.", ivar.labels))
 cv.lrm.cwar <- CleanCV(CallCV(lrm.vars, specs.cwar, "lrm"),

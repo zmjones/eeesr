@@ -1,5 +1,3 @@
-invisible(lapply(c("party", "multicore"), require, character.only = TRUE))
-
 imp <- lapply(c(lrm.vars, "physint"), function(x)
               mclapply(seq(1, MI_ITER), function(z) {
                 formula <- as.formula(paste0(x, "~", paste0(ivars, collapse = "+")))

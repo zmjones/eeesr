@@ -1,6 +1,3 @@
-invisible(lapply(c("rms", "stringr", "plyr"), require, character.only = TRUE))
-options(showprogress = FALSE)
-
 Frms <- function(response, input, model, var) {
   # response: dependent variable (vector)
   # input: input matrix (matrix or dataframe)
