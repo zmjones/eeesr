@@ -77,10 +77,12 @@ plot.df <- df[, !colnames(df) %in% c("ccode", "year", ciri.vars,
 colnames(plot.df) <- ivar.labels
 plot.df <- melt(cor(plot.df))
 plot.df <- plot.df[order(plot.df$value), ]
+plot.df$Var1 <- reorder(plot.df$Var1, plot.df$value)
+plot.df$Var2 <- reorder(plot.df$Var2, plot.df$value)
 p <- ggplot(data = plot.df, aes(x = Var1, y = Var2, fill = value))
 p <- p + geom_tile()
-p <- p + scale_fill_gradient(name = "Correlation", breaks = seq(-.25, 1, by = .25),
-                             low = "white", high = "black")
+p <- p + scale_fill_gradient2(name = "Correlation", breaks = seq(-.25, 1, by = .25),
+                              space = "Lab")
 p <- p + guides(fill = guide_colorbar(barwidth = .75, ticks = FALSE))
 p <- p + labs(x = NULL, y = NULL, title = "Covariate Correlations")
 p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
