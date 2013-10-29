@@ -1,5 +1,3 @@
-invisible(lapply(c("ggplot2", "grid", "reshape2"), require, character.only = TRUE))
-
 PlotAll <- function(df, file.prefix, title) {
   df$spec <- reorder(df$spec, df$coef)
   p <- ggplot(df, aes(x = spec, y = coef))
@@ -44,15 +42,48 @@ PlotImp <- function(var.imp, title, file.prefix, rnames, pval) {
   ggsave(paste0("figures/", file.prefix, ".png"), plot = p, width = 6, height = 6)
 }
 
+imp.vars <- colnames(df.imp)[as.logical(apply(df.imp, 2, function(x) any(is.na(x))))]
+obs <- df.imp[, imp.vars]
+obs$type <- "obs"
+imp <- as.data.frame(do.call("rbind", df.mi))[, imp.vars]
+i <- 1
+imp <- apply(imp, 2, function(x) {
+  x <- x[is.na(obs[, i])]
+  i <- i + 1
+  return(x)
+})
+imp <- as.data.frame(apply(imp, 2, as.numeric))
+imp$type <- "imp"
+plot.df <- as.data.frame(rbind(na.omit(obs), imp))
+plot.df <- melt(plot.df, id.vars = "type")
+mi.labels <- c("Polity", "Executive Compet.", "Executive Open.", "Executive Const.",
+               "Participation Compet.", "log Population", "log GDP per capita",
+               "log Oil Rents", "Left Executive", "log Trade/GDP", "FDI", "Public Trial",
+               "Fair Trial", "Court Decision Final", "Legislative Approval", "WB/IMF Structural Adj.",
+               "IMF Structural Adj.", "WB Structural Adj.", "CAT Ratifier", "Youth Bulge",
+               "AI Press (lag)", "AI Background (lag)", "Western Media (lag)", "HRO Shaming (lag)")
+plot.df$type <- factor(plot.df$type, levels = unique(plot.df$type), labels = c("Imputed", "Observed"))
+plot.df$variable <- factor(plot.df$variable, levels = unique(plot.df$variable), labels = mi.labels)
+p <- ggplot(data = plot.df, aes(x = value))
+p <- p + geom_density(aes(fill = type), alpha = .4)
+p <- p + scale_fill_brewer(palette = "Set1")
+p <- p + facet_wrap( ~ variable, ncol = 4, scales = "free")
+p <- p + theme_bw()
+p <- p + theme(legend.title = element_blank())
+ggsave("figures/mi.png", plot = p, width = 10, height = 10)
+
 plot.df <- df[, !colnames(df) %in% c("ccode", "year", ciri.vars,
                                      "physint", "amnesty", "gdppc", "pop")]
 colnames(plot.df) <- ivar.labels
-p <- ggplot(data = melt(cor(plot.df)), aes(x = Var1, y = Var2, fill = value))
+plot.df <- melt(cor(plot.df))
+plot.df <- plot.df[order(plot.df$value), ]
+p <- ggplot(data = plot.df, aes(x = Var1, y = Var2, fill = value))
 p <- p + geom_tile()
-p <- p + scale_fill_gradient2(space = "Lab", name = "Correlation", breaks = c(1, .5, 0, -.25))
-p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+p <- p + scale_fill_gradient(name = "Correlation", breaks = seq(-.25, 1, by = .25),
+                             low = "white", high = "black")
 p <- p + guides(fill = guide_colorbar(barwidth = .75, ticks = FALSE))
 p <- p + labs(x = NULL, y = NULL, title = "Covariate Correlations")
+p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ggsave("./figures/cor-cov.png", plot = p, width = 8, height = 8)
 
 PlotAll(all[[1]], "all-disap", "Disappearances, All Data (LRM)")
