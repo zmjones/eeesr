@@ -135,6 +135,12 @@ df$execrlc[df$execrlc == -999] <- NA
 df <- aggregate(df, by = list(df$ccode, df$year), max)[, -c(1:2)]
 df <- ddply(df, .(ccode), transform, ainr_lag = c(NA, ainr[-length(ainr)]),
             aibr_lag = c(NA, aibr[-length(aibr)]), avmdia_lag = c(NA, avmdia[-length(avmdia)]),
-            hro_shaming_lag = c(NA, hro_shaming[-length(hro_shaming)]))
+            hro_shaming_lag = c(NA, hro_shaming[-length(hro_shaming)]),
+            physint_lag = c(NA, physint[-length(physint)]),
+            amnesty_lag = c(NA, amnesty[-length(amnesty)]),
+            disap_lag = c(NA, disap[-length(disap)]),
+            kill_lag = c(NA, kill[-length(kill)]),
+            polpris_lag = c(NA, polpris[-length(polpris)]),
+            tort_lag = c(NA, tort[-length(tort)]))
 df <- df[!is.na(df$physint), -c(16,19:21,25:27,43)]
 write.csv(df, "./data/rep.csv", row.names = FALSE)
