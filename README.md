@@ -19,3 +19,4 @@ The approximate runtime of each script varies widely as a function of the number
  - `cv_setup.R` sets up functions and variables for cross-validation procedure
  - `cv.R` cross-validates all models and combines results
  - `plot.R` creates descriptive and model plots
+ - `tree.R` creates decision tree plot for random forest explanation section

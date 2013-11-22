@@ -1,5 +1,5 @@
 all: data analysis paper
-paper: plot.Rout eeesr_manuscript.pdf clean_tex
+paper: plot.Rout tree.Rout eeesr_manuscript.pdf clean_tex 
 analysis: all.Rout imp.Rout cv_setup.Rout cv.Rout
 data: un_utilities.Rout data/rep.csv setup.Rout mi.Rout
 
@@ -31,6 +31,9 @@ cv.Rout: cv.R cv_setup.R setup.R mi.R
 
 plot.Rout: plot.R all.R cv.R imp.R mi.R
 	R CMD BATCH plot.R
+
+tree.Rout: tree.R
+	R CMD BATCH tree.R
 
 TEXCMD := pdflatex -interaction=batchmode
 eeesr_manuscript.pdf: eeesr_manuscript.tex plot.Rout
