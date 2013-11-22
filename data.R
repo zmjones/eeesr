@@ -1,16 +1,19 @@
-pkgs <- c("plyr", "countrycode", "foreign")
+pkgs <- c("plyr", "countrycode", "foreign", "stringr", "lubridate")
 invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
                  install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
 invisible(lapply(pkgs, require, character.only = TRUE))
 
-cat <- read.csv("./data/cat.csv")[, c(1:2,6)]
-cpr <- read.csv("./data/cpr.csv")[, c(1:2,6)]
+cat <- read.csv("./data/cat.csv", check.names = FALSE, na.string = "")
+cat <- expandPanel(expandColumns(cat), syear = "1981", eyear = "1999")
+cat$cat_ratify <- ifelse(cat$ratification == 1 | cat$accession == 1 | cat$succession == 1, 1, 0)
 cat$ccode <- countrycode(cat$participant, "country.name", "cown")
+cat <- cat[, c(8,2,7)]
+
+cpr <- read.csv("./data/cpr.csv", check.names = FALSE, na.string = "")
+cpr <- expandPanel(expandColumns(cpr), syear = "1981", eyear = "1999")
+cpr$cpr_ratify <- ifelse(cpr$ratification == 1 | cpr$accession == 1 | cpr$succession == 1, 1, 0)
 cpr$ccode <- countrycode(cpr$participant, "country.name", "cown")
-names(cat)[3] <- "cat_ratify"
-names(cpr)[3] <- "cpr_ratify"
-cat$participant <- NULL
-cpr$participant <- NULL
+cpr <- cpr[, c(8,2,7)]
 
 paradox <- read.delim("./data/paradox_rep.tab")
 paradox <- paradox[paradox$year >= 1981, ]
@@ -27,11 +30,10 @@ names(ciri) <- tolower(names(ciri))
 ciri <- na.omit(ciri[ciri$year <= 1999, ])
 names(ciri)[2] <- "ccode"
 
-load( "./data/pts.RData")
-pts <- na.omit(PTS[PTS$Year <= 1999 & PTS$Year >= 1981, c(3,5:6)])
+pts <- read.csv("./data/pts.csv")
+pts <- na.omit(pts[pts$Year <= 1999 & pts$Year >= 1981, c(3,5:6)])
 names(pts) <- tolower(names(pts))
 names(pts)[1] <- "ccode"
-rm(PTS)
 
 polcon <- read.csv("./data/polcon.csv")[ ,c(2,7,13)]
 names(polcon) <- tolower(names(polcon))
@@ -99,25 +101,30 @@ mdavis <- read.dta("./data/murdie_davis.dta")[, c(1,2,16)]
 mdavis <- mdavis[mdavis$year >= 1981 & mdavis$year <= 1999, ]
 names(mdavis)[2:3] <- c("ccode", "hro_shaming")
 
-df <- join(paradox, polity, type = "left")
-df <- join(df, ciri, type = "left")
-df <- join(df, pts, type = "left")
-df <- join(df, polcon, type = "left")
-df <- join(df, exgdp, type = "left")
-df <- join(df, acd, type = "left")
-df <- join(df, oil, type = "left")
-df <- join(df, dpi, type = "left")
-df <- join(df, hill_isq, type = "left")
-df <- join(df, wb, type = "left")
-df <- join(df, civ_libs, type = "left")
-df <- join(df, soe_jud, type = "left")
-df <- join(df, a_cbook, type = "left")
-df <- join(df, mitch, type = "left")
-df <- join(df, sb, type = "left")
-df <- join(df, cat, type = "left")
-df <- join(df, cpr, type = "left")
-df <- join(df, youth, type = "left")
-df <- join(df, mdavis, type = "left")
+latent <- read.csv("./data/farriss_latent.csv")[, c(1,3,18)]
+names(latent) <- c("year", "ccode", "latent")
+latent <- latent[latent$year >= 1981 & latent$year <= 1999, ]
+
+df <- join(paradox, polity)
+df <- join(df, ciri)
+df <- join(df, pts)
+df <- join(df, polcon)
+df <- join(df, exgdp)
+df <- join(df, acd)
+df <- join(df, oil)
+df <- join(df, dpi)
+df <- join(df, hill_isq)
+df <- join(df, wb)
+df <- join(df, civ_libs)
+df <- join(df, soe_jud)
+df <- join(df, a_cbook)
+df <- join(df, mitch)
+df <- join(df, sb)
+df <- join(df, cat)
+df <- join(df, cpr)
+df <- join(df, youth)
+df <- join(df, mdavis)
+df <- join(df, latent)
 
 df$cat_ratify[is.na(df$cat_ratify)] <- 0
 df$cpr_ratify[is.na(df$cpr_ratify)] <- 0
@@ -141,6 +148,7 @@ df <- ddply(df, .(ccode), transform, ainr_lag = c(NA, ainr[-length(ainr)]),
             disap_lag = c(NA, disap[-length(disap)]),
             kill_lag = c(NA, kill[-length(kill)]),
             polpris_lag = c(NA, polpris[-length(polpris)]),
-            tort_lag = c(NA, tort[-length(tort)]))
-df <- df[!is.na(df$physint), -c(16,19:21,25:27,43)]
+            tort_lag = c(NA, tort[-length(tort)]),
+            latent_lag = c(NA, latent[-length(latent)]))
+df <- df[, -c(16,19:21,25:27,43)]
 write.csv(df, "./data/rep.csv", row.names = FALSE)

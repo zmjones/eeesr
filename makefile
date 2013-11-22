@@ -1,7 +1,15 @@
-repo: data/rep.csv setup.Rout mi.Rout imp.Rout all.Rout cv_setup.Rout cv.Rout plot.Rout eeesr_manuscript.pdf eeesr_presentation.pdf clean_tex
+all: data analysis paper
+paper: plot.Rout eeesr_manuscript.pdf clean_tex
+analysis: all.Rout imp.Rout cv_setup.Rout cv.Rout
+data: un_utilities.Rout data/rep.csv setup.Rout mi.Rout
 
-data/rep.csv: data.R
-	R CMD BATCH --no-save data.R
+un_utilities.Rout: get_un.sh
+	source get_un.sh
+	R CMD BATCH un_utilites.R
+
+data/rep.csv: data.R 
+	R CMD BATCH data.R
+	rm .RData
 
 setup.Rout: setup.R
 	R CMD BATCH setup.R
@@ -25,19 +33,20 @@ plot.Rout: plot.R all.R cv.R imp.R mi.R
 	R CMD BATCH plot.R
 
 TEXCMD := pdflatex -interaction=batchmode
-# eeesr_manuscript.pdf: eeesr_manuscript.tex plot.Rout
-# 	$(TEXCMD) $<
-# 	bibtex *.aux
-# 	$(TEXCMD) $<
-# 	$(TEXCMD) $<
-
-eeesr_presentation.pdf: eeesr_presentation.tex plot.Rout
+eeesr_manuscript.pdf: eeesr_manuscript.tex plot.Rout
+	$(TEXCMD) $<
+	bibtex *.aux
+	$(TEXCMD) $<
 	$(TEXCMD) $<
 
+# eeesr_presentation.pdf: eeesr_presentation.tex plot.Rout
+# 	$(TEXCMD) $<
+
 clean_tex:
-	find . | egrep ".*((\.(aux|log|blg|bbl|out|DS_Store|nav|toc|snm))|~)$$" | xargs rm
+	find . | egrep ".*((\.(aux|log|blg|bbl|out|DS_Store|nav|toc|snm)))$$" | xargs rm
 	rm -rf auto
 
 clean_r:
-	find . | egrep ".*((\.(Rout|RData|Rhistory))|~)$$" | xargs rm
+	find . | egrep ".*((\.(Rout|Rhistory))|~)$$" | xargs rm
 	rm -rf auto
+	rm .RData

@@ -1,17 +1,15 @@
-set.seed(1987)
-options(showprogress = FALSE)
-
-CORES <- 8
+CORES <- 7
 CV_FOLD <- 10
 CV_ITER <- 1000
-MI_ITER <- 5
-PLOT_BORDER <- .15
+MI_ITER <- 15
+B_ITER <- 100
+PLOT_BORDER <- .1
+PANEL_BORDER <- .25
 
 pkgs <- c("plyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
           "countrycode", "foreign", "rms", "multicore", "party", "mice")
 invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
                  install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
-invisible(lapply(pkgs, require, character.only = TRUE))
 
 df <- read.csv("./data/rep.csv")
 df$disap <- as.ordered(df$disap)
@@ -22,15 +20,18 @@ df$physint <- as.ordered(df$physint)
 df$amnesty <- as.ordered(df$amnesty)
 df$gdppc <- log(df$gdppc)
 df$pop <- log(df$pop)
-df.imp <- df[!(is.na(df$amnesty) | is.na(df$physint)), ]
-df <- na.omit(df)
+df <- df[!is.na(df$physint) & !is.na(df$amnesty), ]
 
 lrm.vars <- c("disap", "kill", "polpris", "tort", "amnesty")
-ols.vars <- c("physint", "amnesty")
+lrm.labs <- c("Disappearances", "Killings", "Political Imprisonment", "Torture", "Political Terror Scale")
+ols.vars <- c("physint", "amnesty", "latent")
+ols.labs <- c("Physical Integrity Index", "Political Terror Scale", "Dynamic Latent Score")
 ciri.vars <- lrm.vars[1:4]
 base.spec <- "~ log(gdppc) + log(pop)"
 ivars <- colnames(df)[!colnames(df) %in% c("ccode", "year", ciri.vars,
-                                           "physint", "amnesty", "gdppc", "pop")]
+                                           "physint", "amnesty", "gdppc", "pop", "latent",
+                                           "physint_lag", "amnesty_lag", "disap_lag",
+                                           "kill_lag", "polpris_lag", "tort_lag", "latent_lag")]
 specs <- paste0("~ gdppc + pop + ", ivars)
 specs.cwar <- paste0("~ gdppc + pop + cwar + ", ivars[!(ivars %in% "cwar")])
 ivar.labels <- c("log INGOs", "Polity", "Executive Compet.", "Executive Open.",
