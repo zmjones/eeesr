@@ -1,49 +1,87 @@
-PlotAll <- function(df, file.prefix, title) {
-  df$spec <- reorder(df$spec, df$coef)
-  p <- ggplot(df, aes(x = spec, y = coef))
+require(ggplot2)
+require(reshape2)
+require(plyr)
+require(grid)
+
+setBreaks <- function(x) {
+  range <- max(x) - min(x)
+  breaks <- round(c(min(x) + range / 5, median(x), max(x) - range / 5), 2)
+  names(breaks) <- attr(breaks, "labels")
+  return(breaks)
+}
+
+PlotCater <- function(cv, file.prefix, xlab = "Coefficient", mtype = "LRM", all = FALSE, imp = FALSE) {
+  len <- length(cv)
+  if (all == FALSE) {
+    if (mtype == "LRM")
+      bound <- "upr"
+    else if (mtype == "OLS")
+      bound <- "lwr"
+    else
+      stop("Invalid model type argument.")
+  }
+  cv <- ldply(cv, function(x) {
+    if (all == FALSE & imp == FALSE)
+      x$base <- x[grep("log GDP per cap\\.", x$spec), bound]
+    else x$base <- 0
+    x$spec <- as.factor(x$spec)
+    return(x)
+  })
+  cv$spec <- reorder(cv$spec, cv$median)
+  if (all == FALSE & imp == FALSE)
+    cv <- ddply(cv, .(depvar), transform, pos = grep("log GDP per cap\\.", levels(spec)))
+  p <- ggplot(data = cv, aes(y = spec, x = median))
   p <- p + geom_point()
-  p <- p + geom_errorbar(aes(y = coef, ymin = coef - 2 * se, ymax = coef + 2 * se), width = .2)
-  p <- p + geom_hline(y = 0, linetype = "dashed")
-  p <- p + labs(x = "Model Specification", y = "Coefficient", title = title)
-  p <- p + coord_flip() + theme_bw()
+  p <- p + geom_errorbarh(aes(x = median, xmax = upr, xmin = lwr, height = .25))
+  p <- p + geom_vline(aes(xintercept = base), linetype = "dashed")
+  if (all == FALSE & imp == FALSE)
+    p <- p + geom_rect(aes(ymin = pos - .5, ymax = pos + .5, xmin = -Inf, xmax = Inf), alpha = .01)
+  p <- p + scale_x_continuous(breaks = setBreaks)
+  p <- p + labs(x = xlab, y = NULL)
+  p <- p + facet_wrap(~ depvar, scales = "free_x", nrow = 1)
+  p <- p + theme_bw()
   p <- p + theme(plot.margin = unit(rep(PLOT_BORDER, 4), "in"))
-  ggsave(paste0("figures/", file.prefix, ".png"), plot = p, width = 6, height = 6)
+  scale <- .85
+  height <- 6
+  width <- 12
+  ## if (imp == TRUE)
+  ##   height <- height * 3
+  ggsave(paste0("./figures/", file.prefix, ".png"), plot = p,
+         height = height * scale, width = width * scale)
 }
 
-PlotCV <- function(df, file.prefix, title, ylab) {
-  if (grepl("LRM", title))
-    df$base <- df[grep("log GDP per cap\\.", df$spec), "upr"]
-  else
-    df$base <- df[grep("log GDP per cap\\.", df$spec), "lwr"]
-  df$spec <- reorder(df$spec, df$median)
-  df$pos <- grep("log GDP per cap\\.", levels(df$spec))
-  p <- ggplot(data = df, aes(x = spec, y = median, group = spec))
-  p <- p + geom_point()
-  p <- p + geom_errorbar(aes(y = median, ymin = lwr, ymax = upr), width = .25)
-  p <- p + geom_hline(aes(yintercept = base), linetype = "dashed")
-  p <- p + geom_rect(aes(xmin = pos - .5, xmax = pos + .5, ymin = -Inf, ymax = Inf), alpha = .01)
-  p <- p + theme_bw() + coord_flip()
-  p <- p + labs(title = title, y = ylab, x = "Model Specification")
-  p <- p + theme(plot.margin = unit(rep(PLOT_BORDER, 4), "in"))
-  ggsave(paste("./figures/", file.prefix, ".png", sep = ""), plot = p, width = 6, height = 6)
+depvars <- c(rep(lrm.labs, 3), rep(ols.labs, 3))
+depvars.imp <- c(lrm.labs, ols.labs[-2])
+
+for(i in 1:length(imp))
+  imp[[i]]$depvar <- depvars.imp[i]
+
+for(i in 1:length(cv)) {
+  cv[[i]]$depvar <- depvars[i]
+  ## all[[i]]$depvar <- depvars[i]
 }
 
-PlotImp <- function(var.imp, title, file.prefix, rnames, pval) {
-  sig <- sapply(pval, function(x) if (x <= .05) "yes" else "no")
-  df <- data.frame("var" = rnames, "imp" = var.imp[1, ],
-                   "sig" = factor(sig, levels = c("yes", "no")))
-  df$var <- reorder(factor(df$var), df$imp)
-  p <- ggplot(data = df, aes(x = factor(var), y = imp, fill = sig))
-  p <- p + scale_fill_grey(name = "p < .05")
-  p <- p + geom_bar(stat = "identity")
-  p <- p + labs(x = "Variable", y = "Importance", title = title)
-  p <- p + coord_flip() + theme_bw()
-  p <- p + theme(plot.margin = unit(rep(PLOT_BORDER, 4), "in"))
-  ggsave(paste0("figures/", file.prefix, ".png"), plot = p, width = 6, height = 6)
-}
+PlotCater(cv[c(1:4)], "cv-lrm", expression(D[xy]), "LRM")
+PlotCater(cv[c(6:9)], "cv-lrm-cwar", expression(D[xy]), "LRM")
+PlotCater(cv[c(1:5)], "cv-lrm-pts", expression(D[xy]), "LRM")
+PlotCater(cv[c(6:10)], "cv-lrm-cwar-pts", expression(D[xy]), "LRM")
+PlotCater(cv[c(11:15)], "cv-lrm-ldv", expression(D[xy]), "LRM")
+PlotCater(cv[c(16:18)], "cv-ols", "RMSE", "OLS")
+PlotCater(cv[c(19:21)], "cv-ols-cwar", "RMSE", "OLS")
+PlotCater(cv[c(22:23)], "cv-ols-ldv", "RMSE", "OLS")
 
-mi.vars <- colnames(df.imp)[as.logical(apply(df.imp, 2, function(x) any(is.na(x))))]
-obs <- df.imp[, mi.vars]
+PlotCater(all[c(1:5)], "all-lrm", all = TRUE)
+PlotCater(all[c(6:10)], "all-lrm-cwar", all = TRUE)
+PlotCater(all[c(11:15)], "all-lrm-ldv", all = TRUE)
+PlotCater(all[c(16:18)], "all-ols", all = TRUE)
+PlotCater(all[c(19:21)], "all-ols-cwar", all = TRUE)
+PlotCater(all[c(22:23)], "all-ols-ldv", all = TRUE)
+
+PlotCater(imp[c(1:4)], "imp-ciri", "Permutation Importance", imp = TRUE)
+PlotCater(imp[c(5:7)], "imp-aggregate", "Permutation Importance", imp = TRUE)
+
+mi.vars <- colnames(df)[as.logical(apply(df, 2, function(x) any(is.na(x))))]
+obs <- df[, mi.vars[-c(25:30)]]
 obs$type <- "obs"
 mi <- as.data.frame(do.call("rbind", df.mi))[, mi.vars]
 i <- 1
@@ -53,8 +91,9 @@ mi <- apply(mi, 2, function(x) {
   return(x)
 })
 mi <- as.data.frame(apply(mi, 2, as.numeric))
+mi <- mi[, mi.vars[-c(25:31)]]
 mi$type <- "mi"
-plot.df <- as.data.frame(rbind(na.omit(obs), mi))
+plot.df <- as.data.frame(rbind(obs, mi))
 plot.df <- melt(plot.df, id.vars = "type")
 mi.labels <- c("Polity", "Executive Compet.", "Executive Open.", "Executive Const.",
                "Participation Compet.", "log Population", "log GDP per capita",
@@ -72,10 +111,11 @@ p <- p + theme_bw()
 p <- p + theme(legend.title = element_blank())
 ggsave("figures/mi.png", plot = p, width = 10, height = 10)
 
-plot.df <- df[, !colnames(df) %in% c("ccode", "year", ciri.vars,
-                                     "physint", "amnesty", "gdppc", "pop")]
-colnames(plot.df) <- ivar.labels
-plot.df <- melt(cor(plot.df))
+depvars <- c(lrm.vars, "physint")
+depvars <- c(depvars, paste0(depvars, "_lag"))
+plot.df <- df[, !colnames(df) %in% c("ccode", "year", "gdppc", "pop", depvars)]
+colnames(plot.df) <- c(ivar.labels)
+plot.df <- melt(cor(plot.df, use = "na.or.complete"))
 plot.df <- plot.df[order(plot.df$value), ]
 plot.df$Var1 <- reorder(plot.df$Var1, plot.df$value)
 plot.df$Var2 <- reorder(plot.df$Var2, plot.df$value)
@@ -84,43 +124,6 @@ p <- p + geom_tile()
 p <- p + scale_fill_gradient2(name = "Correlation", breaks = seq(-.25, 1, by = .25),
                               space = "Lab")
 p <- p + guides(fill = guide_colorbar(barwidth = .75, ticks = FALSE))
-p <- p + labs(x = NULL, y = NULL, title = "Covariate Correlations")
+p <- p + labs(x = NULL, y = NULL)
 p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ggsave("./figures/cor-cov.png", plot = p, width = 8, height = 8)
-
-PlotAll(all[[1]], "all-disap", "Disappearances, All Data (LRM)")
-PlotAll(all[[2]], "all-kill", "Killings, All Data (LRM)")
-PlotAll(all[[3]], "all-polpris", "Political Imprisonment, All Data (LRM)")
-PlotAll(all[[4]], "all-tort", "Torture, All Data (LRM)")
-PlotAll(all[[5]], "all-pts-lrm", "Political Terror Scale, All Data (LRM)")
-PlotAll(all[[6]], "all-physint", "Physical Integrity Index, All Data (OLS)")
-PlotAll(all[[7]], "all-pts-ols", "Political Terror Scale, All Data (OLS)")
-
-dxy.lab <- expression(D[xy])
-PlotCV(cv[[1]], "cv-disap", "Disappearances (LRM)", dxy.lab)
-PlotCV(cv[[2]], "cv-kill", "Killings (LRM)", dxy.lab)
-PlotCV(cv[[3]], "cv-polpris", "Political Imprisonment (LRM)", dxy.lab)
-PlotCV(cv[[4]], "cv-tort", "Torture (LRM)", dxy.lab)
-PlotCV(cv[[5]], "cv-pts-lrm", "Political Terror Scale (LRM)", dxy.lab)
-PlotCV(cv[[6]], "cv-cwar-disap", "Disappearances (LRM)", dxy.lab)
-PlotCV(cv[[7]], "cv-cwar-kill", "Killings (LRM)", dxy.lab)
-PlotCV(cv[[8]], "cv-cwar-polpris", "Political Imprisonment (LRM)", dxy.lab)
-PlotCV(cv[[9]], "cv-cwar-tort", "Torture (LRM)", dxy.lab)
-PlotCV(cv[[10]], "cv-cwar-pts-lrm", "Political Terror Scale (LRM)", dxy.lab)
-PlotCV(cv[[11]], "cv-physint", "Physical Integrity Index (OLS)", "RMSE")
-PlotCV(cv[[12]], "cv-pts-ols", "Political Terror Scale (OLS)", "RMSE")
-PlotCV(cv[[13]], "cv-cwar-physint", "Physical Integrity Index (OLS)", "RMSE")
-PlotCV(cv[[14]], "cv-cwar-pts-ols", "Political Terror Scale (OLS)", "RMSE")
-
-PlotImp(imp[[1]], "Disappearances, Importance and Significance (LRM)",
-        "disap-imp-sig", ivar.labels, pval[[1]])
-PlotImp(imp[[2]], "Killings, Importance and Significance (LRM)",
-        "kill-imp-sig", ivar.labels, pval[[2]])
-PlotImp(imp[[3]], "Political Imprisonment, Importance and Significance (LRM)",
-        "polpris-imp-sig", ivar.labels, pval[[3]])
-PlotImp(imp[[4]], "Torture, Importance and Significance (LRM)",
-        "tort-imp-sig", ivar.labels, pval[[4]])
-PlotImp(imp[[5]], "Political Terror Scale, Importance and Significance (LRM)",
-        "pts-imp-sig", ivar.labels, pval[[5]])
-PlotImp(imp[[6]], "Physical Integrity Index, Importance and Significance (OLS)",
-        "physint-imp-sig", ivar.labels, pval[[6]])
