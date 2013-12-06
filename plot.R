@@ -2,6 +2,8 @@ require(ggplot2)
 require(reshape2)
 require(plyr)
 require(grid)
+require(xtable)
+require(polycor)
 
 setBreaks <- function(x) {
   range <- max(x) - min(x)
@@ -10,8 +12,11 @@ setBreaks <- function(x) {
   return(breaks)
 }
 
-PlotCater <- function(cv, file.prefix, xlab = "Coefficient", mtype = "LRM", all = FALSE, imp = FALSE) {
-  len <- length(cv)
+PlotCater <- function(df, file.prefix, xlab = "Coefficient", mtype = "LRM", all = FALSE, imp = FALSE) {
+  scale <- .85
+  height <- 6
+  width <- 12
+  len <- length(df)
   if (all == FALSE) {
     if (mtype == "LRM")
       bound <- "upr"
@@ -20,17 +25,17 @@ PlotCater <- function(cv, file.prefix, xlab = "Coefficient", mtype = "LRM", all 
     else
       stop("Invalid model type argument.")
   }
-  cv <- ldply(cv, function(x) {
+  df <- ldply(df, function(x) {
     if (all == FALSE & imp == FALSE)
       x$base <- x[grep("log GDP per cap\\.", x$spec), bound]
     else x$base <- 0
     x$spec <- as.factor(x$spec)
     return(x)
   })
-  cv$spec <- reorder(cv$spec, cv$median)
+  df$spec <- reorder(df$spec, df$median)
   if (all == FALSE & imp == FALSE)
-    cv <- ddply(cv, .(depvar), transform, pos = grep("log GDP per cap\\.", levels(spec)))
-  p <- ggplot(data = cv, aes(y = spec, x = median))
+    df <- ddply(df, .(depvar), transform, pos = grep("log GDP per cap\\.", levels(spec)))
+  p <- ggplot(data = df, aes(y = spec, x = median))
   p <- p + geom_point()
   p <- p + geom_errorbarh(aes(x = median, xmax = upr, xmin = lwr, height = .25))
   p <- p + geom_vline(aes(xintercept = base), linetype = "dashed")
@@ -41,11 +46,6 @@ PlotCater <- function(cv, file.prefix, xlab = "Coefficient", mtype = "LRM", all 
   p <- p + facet_wrap(~ depvar, scales = "free_x", nrow = 1)
   p <- p + theme_bw()
   p <- p + theme(plot.margin = unit(rep(PLOT_BORDER, 4), "in"))
-  scale <- .85
-  height <- 6
-  width <- 12
-  ## if (imp == TRUE)
-  ##   height <- height * 3
   ggsave(paste0("./figures/", file.prefix, ".png"), plot = p,
          height = height * scale, width = width * scale)
 }
@@ -58,7 +58,7 @@ for(i in 1:length(imp))
 
 for(i in 1:length(cv)) {
   cv[[i]]$depvar <- depvars[i]
-  ## all[[i]]$depvar <- depvars[i]
+  all[[i]]$depvar <- depvars[i]
 }
 
 PlotCater(cv[c(1:4)], "cv-lrm", expression(D[xy]), "LRM")
@@ -111,17 +111,17 @@ p <- p + theme_bw()
 p <- p + theme(legend.title = element_blank())
 ggsave("figures/mi.png", plot = p, width = 10, height = 10)
 
-depvars <- c(lrm.vars, "physint")
+depvars <- c(lrm.vars, "physint", "latent")
 depvars <- c(depvars, paste0(depvars, "_lag"))
 plot.df <- df[, !colnames(df) %in% c("ccode", "year", "gdppc", "pop", depvars)]
 colnames(plot.df) <- c(ivar.labels)
-plot.df <- melt(cor(plot.df, use = "na.or.complete"))
+plot.df <- melt(hetcor(plot.df, use = "pairwise.complete.obs")$correlations)
 plot.df <- plot.df[order(plot.df$value), ]
 plot.df$Var1 <- reorder(plot.df$Var1, plot.df$value)
 plot.df$Var2 <- reorder(plot.df$Var2, plot.df$value)
 p <- ggplot(data = plot.df, aes(x = Var1, y = Var2, fill = value))
 p <- p + geom_tile()
-p <- p + scale_fill_gradient2(name = "Correlation", breaks = seq(-.25, 1, by = .25),
+p <- p + scale_fill_gradient2(name = "Correlation", breaks = seq(-1, 1, by = .25),
                               space = "Lab")
 p <- p + guides(fill = guide_colorbar(barwidth = .75, ticks = FALSE))
 p <- p + labs(x = NULL, y = NULL)

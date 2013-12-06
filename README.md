@@ -6,7 +6,7 @@ You can download the data necessary to run this code [here](http://zmjones.com/s
 
 Package dependencies are automatically checked for and installed by `setup.R` and loaded in each script.
 
-You can clone this repository using git or [download](https://github.com/zmjones/eeesr/archive/master.zip) it as a `.zip` archive. If you don't want to use the makefile, be sure to run the scripts in the order specified in the makefile (also shown below).
+You can clone this repository using git or [download](https://github.com/zmjones/eeesr/archive/master.zip) it as a `.zip` archive. If you don't want to use the makefile, be sure to run the scripts in the order specified in the makefile (also shown below). This build process has only been tested on OSX.
 
 The approximate runtime of each script varies widely as a function of the number of cross-validation iterations, bootstrap iterations, number of imputations performed, and the number of cores the computation is distributed across (all of these variables are set in `setup.R`). All of the analysis was run on [Amazon's Elastic Compute Cloud](http://aws.amazon.com/ec2/).
 

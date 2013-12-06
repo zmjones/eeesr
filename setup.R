@@ -40,7 +40,7 @@ ivar.labels <- c("log INGOs", "Polity", "Executive Compet.", "Executive Open.",
                  "Public Trial", "Fair Trial", "Court Decision Final", "Legislative Approval",
                  "WB/IMF Structural Adj.", "IMF Structural Adj.", "WB Structural Adj.",
                  "British Colony", "Common Law", "PTA w/ HR Clause", "CAT Ratifier",
-                 "CPR Ratifier", "Youth Bulge", "Civil War", "International War",
+                 "CCPR Ratifier", "Youth Bulge", "Civil War", "International War",
                  "AI Press (lag)", "AI Background (lag)", "Western Media (lag)",
                  "HRO Shaming (lag)")
 ivar.labels.cwar <- ivar.labels[!(ivar.labels %in% "Civil War")]

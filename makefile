@@ -30,6 +30,7 @@ cv.Rout: cv.R cv_setup.Rout setup.Rout mi.Rout
 	R CMD BATCH cv.R
 
 plot.Rout: plot.R all.Rout cv.Rout imp.Rout mi.Rout
+	mkdir -p figures
 	R CMD BATCH plot.R
 
 tree.Rout: tree.R
