@@ -2,7 +2,6 @@ require(ggplot2)
 require(reshape2)
 require(plyr)
 require(grid)
-require(xtable)
 require(polycor)
 
 setBreaks <- function(x) {
@@ -16,7 +15,6 @@ PlotCater <- function(df, file.prefix, xlab = "Coefficient", mtype = "LRM", all 
   scale <- .85
   height <- 6
   width <- 12
-  len <- length(df)
   if (all == FALSE) {
     if (mtype == "LRM")
       bound <- "upr"
