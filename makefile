@@ -1,7 +1,13 @@
 all: data analysis paper
-paper: plot.Rout tree.Rout eeesr_manuscript.pdf clean_tex 
+paper: plot.Rout tree.Rout subdirs
 analysis: all.Rout imp.Rout cv_setup.Rout cv.Rout
 data: un_utilities.Rout data/rep.csv setup.Rout mi.Rout
+
+SUBDIRS = manuscript ## presentation
+.PHONY: subdirs $(SUBDIRS)
+subdirs: $(SUBDIRS)
+$(SUBDIRS):
+	make -C $@
 
 un_utilities.Rout: get_un.sh
 	source get_un.sh
@@ -36,21 +42,7 @@ plot.Rout: plot.R all.Rout cv.Rout imp.Rout mi.Rout
 tree.Rout: tree.R
 	R CMD BATCH tree.R
 
-TEXCMD := pdflatex -interaction=batchmode
-eeesr_manuscript.pdf: eeesr_manuscript.tex plot.Rout
-	$(TEXCMD) $<
-	bibtex *.aux
-	$(TEXCMD) $<
-	$(TEXCMD) $<
-
-# eeesr_presentation.pdf: eeesr_presentation.tex plot.Rout
-# 	$(TEXCMD) $<
-
-clean_tex:
-	find . | egrep ".*((\.(aux|log|blg|bbl|out|DS_Store|nav|toc|snm)))$$" | xargs rm
-	rm -rf auto
-
-clean_r:
+clean_all:
 	find . | egrep ".*((\.(Rout|Rhistory))|~)$$" | xargs rm
 	rm -rf auto
 	rm .RData
