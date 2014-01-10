@@ -2,7 +2,7 @@ Code for "[An Empirical Evaluation of Explanations for State Repression](http://
 
 [Open an issue](https://github.com/zmjones/eeesr/issues/new) or send me an [email](mailto:zmj@zmjones.com) if you have any problems or suggestions.
 
-You can download the data necessary to run this code [here](http://zmjones.com/static/posts/data/eeesr_data.zip). The code expects the data to be in a subdirectory labeled `data`. The UN Treaty data is downloaded by `get_un.sh` which requires [git](http://git-scm.com/). However, you can skip the data wrangling stage of the computation by only re-running the analysis (`make analysis`) or re-making the plots and the manuscript, as described in the makefile (`make paper`).
+You can download the data necessary to run this code [here](http://zmjones.com/static/data/eeesr_data.zip). The code expects the data to be in a subdirectory labeled `data`. The UN Treaty data is downloaded by `get_un.sh` which requires [git](http://git-scm.com/). However, you can skip the data wrangling stage of the computation by only re-running the analysis (`make analysis`) or re-making the plots and the manuscript, as described in the makefile (`make paper`).
 
 Package dependencies are automatically checked for and installed by `setup.R` and loaded in each script.
 
