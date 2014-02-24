@@ -79,9 +79,9 @@ PlotCater(imp[c(1:4)], "imp-ciri", "Permutation Importance", imp = TRUE)
 PlotCater(imp[c(5:7)], "imp-aggregate", "Permutation Importance", imp = TRUE)
 
 mi.vars <- colnames(df)[as.logical(apply(df, 2, function(x) any(is.na(x))))]
-obs <- df[, mi.vars[-c(25:30)]]
+obs <- df[, mi.vars[-c(25:31)]]
 obs$type <- "obs"
-mi <- as.data.frame(do.call("rbind", df.mi))[, mi.vars]
+mi <- as.data.frame(do.call("rbind", df.mi))[, mi.vars[-c(25:31)]]
 i <- 1
 mi <- apply(mi, 2, function(x) {
   x <- x[is.na(obs[, i])]
@@ -97,11 +97,11 @@ mi.labels <- c("Polity", "Executive Compet.", "Executive Open.", "Executive Cons
                "Participation Compet.", "log Population", "log GDP per capita",
                "log Oil Rents", "Left Executive", "log Trade/GDP", "FDI", "Public Trial",
                "Fair Trial", "Court Decision Final", "Legislative Approval", "WB/IMF Structural Adj.",
-               "IMF Structural Adj.", "WB Structural Adj.", "CAT Ratifier", "Youth Bulge",
+               "IMF Structural Adj.", "WB Structural Adj.", "PTA w/ HR Clause", "Youth Bulge",
                "AI Press (lag)", "AI Background (lag)", "Western Media (lag)", "HRO Shaming (lag)")
-plot.df$type <- factor(plot.df$type, levels = unique(plot.df$type), labels = c("Imputed", "Observed"))
+plot.df$type <- factor(plot.df$type, levels = unique(plot.df$type), labels = c("Observed", "Imputed"))
 plot.df$variable <- factor(plot.df$variable, levels = unique(plot.df$variable), labels = mi.labels)
-p <- ggplot(data = plot.df, aes(x = value))
+p <- ggplot(data = na.omit(plot.df), aes(x = value))
 p <- p + geom_density(aes(fill = type), alpha = .4)
 p <- p + scale_fill_brewer(palette = "Set1")
 p <- p + facet_wrap( ~ variable, ncol = 4, scales = "free")
