@@ -1,6 +1,7 @@
 set.seed(1987)
 require(multicore)
 require(party)
+require(irr)
 
 FormatImp <- function(imp) {
   imp <- lapply(imp, function(x) do.call(rbind, x))
@@ -24,3 +25,20 @@ imp <- lapply(c(lrm.vars, ols.vars[-2]), function(y) {
 })
 
 imp <- FormatImp(imp)
+
+check <- function(y, mtry = c(3, 5, 10, 15), ntree = c(500, 1000, 3000)) {
+    formula <- as.formula(paste0(y, "~", paste0(ivars, collapse = "+")))
+    tune <- expand.grid("mtry" = mtry, "ntree" = ntree)
+    rc <- mclapply(1:nrow(tune), function(i) {
+        fit <- cforest(formula, df, control = cforest_unbiased(mtry = tune[i, 1], ntree = tune[i, 2]))
+        rank(varimp(fit))
+    }, mc.cores = CORES)
+    t(do.call("rbind", rc))
+}
+
+ck <- lapply(c(lrm.vars, ols.vars[-2]), function(y) check(y))
+ack <- lapply(ck, function(x) agree(x, 6)$value)
+kck <- lapply(ck, function(x) kendall(x, TRUE)$value)
+as <- data.frame("agreement" = unlist(ack), "tau" = unlist(kck))
+row.names(as) <- c(lrm.labs, ols.labs[-2])
+xtable(as)

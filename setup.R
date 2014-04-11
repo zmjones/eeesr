@@ -7,7 +7,8 @@ PLOT_BORDER <- .1
 PANEL_BORDER <- .25
 
 pkgs <- c("plyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
-          "countrycode", "foreign", "rms", "multicore", "party", "mice")
+          "countrycode", "foreign", "rms", "multicore", "party", "mice",
+          "irr", "xtable")
 invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
                  install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
 

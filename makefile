@@ -10,7 +10,7 @@ $(SUBDIRS):
 	make -C $@
 
 un_utilities.Rout: get_un.sh
-	source get_un.sh
+	source "get_un.sh"
 	R CMD BATCH un_utilities.R
 
 data/rep.csv: data.R get_un.sh
@@ -43,6 +43,5 @@ tree.Rout: tree.R
 	R CMD BATCH tree.R
 
 clean_all:
-	find . | egrep ".*((\.(Rout|Rhistory))|~)$$" | xargs rm
+	find . | egrep ".*((\.(RData|Rout|Rhistory))|~)$$" | xargs rm
 	rm -rf auto
-	rm .RData

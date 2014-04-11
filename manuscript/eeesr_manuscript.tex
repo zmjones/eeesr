@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{setspace,endnotes,amsmath,amsfonts,amssymb,url,graphicx,booktabs,longtable}
 \usepackage[colorlinks=TRUE, citecolor=black, urlcolor=blue]{hyperref}
@@ -7,10 +7,10 @@
 \usepackage{caption}
 \graphicspath{{../figures/}}
 
-\setlength{\LTcapwidth}{5in}
-\def\p3s{\phantom{xxx}}
-\parskip=0pt
-\parindent=30pt
+% \setlength{\LTcapwidth}{5in}
+% \def\p3s{\phantom{xxx}}
+% \parskip=0pt
+% \parindent=30pt
 
 \date{\today}
 \title{An Empirical Evaluation of Explanations for State Repression}
@@ -19,13 +19,12 @@ University of Georgia. email: \href{mailto:dwhill@uga.edu}{dwhill@uga.edu}.} and
 
 \begin{document}
 
-\vspace{50mm}
-\bigskip
+% \vspace{50mm}
+% \bigskip
 \maketitle 
-\thispagestyle{empty}
+% \thispagestyle{empty}
 
-\clearpage
-\doublespacing
+% \clearpage
 
 \begin{abstract}
 The empirical literature that examines cross-national patterns of state repression seeks to discover a set of political, economic, and social conditions that are consistently associated with government violations of human rights. Null hypothesis significance testing is the most common way of examining the relationship  between repression and concepts of interest, but we argue that it is inadequate for this goal, and has produced potentially misleading results. To remedy this deficiency in the literature we use cross-validation and random forests to determine the {\em predictive} power of measures of concepts the literature identifies as important causes of repression. We find that few of these measures are able to substantially improve the predictive power of statistical models of repression. Further, the most studied concept in the literature, democratic political institutions, predicts certain kinds of repression much more accurately than others. We argue that this is due to conceptual overlap between democracy and certain kinds of state repression. Finally, we argue that the impressive performance of certain features of domestic legal systems, as well as some economic and demographic factors, justifies a stronger focus on these concepts in future studies of repression.
@@ -168,8 +167,8 @@ Western Media Shaming & Ron, Ramos, and Rodgers (2005) \\
 HRO Shaming & Murdie and Davis (2012) \\
 \midrule
 {\em International Law} & \\
-ICCPR Ratification & UN website \\
-CAT Ratification & UN website \\
+ICCPR Ratification & UN website via {\tt untreaties}\footnote{{\tt untreaties} is available at \url{http://github.com/zmjones/untreaties/}} \\
+CAT Ratification & UN website via {\tt untreaties} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -413,5 +412,29 @@ To impute missing values in our data we use a combination of classification tree
 \caption{Coefficient estimates of the same form as Figure \ref{fig:all-lrm}, with the base specification being the natural logs of GDP per capita and population in addition to a lagged dependent variable.}
 \label{fig:all-lrm-ldv}
 \end{figure}
+
+\subsection{Stability of Random Forest Results}
+
+The random forest algorithm used has two main tuning parameters, the number of variables selected for each bootstrap sample taken at each node, and the number of trees grown in the forest. If the results are unstable across these tuning parameters, this casts doubt on the reliability of the results. To verify the stability of the results we estimate permutation importance using random forests with different combinations of tuning parameters. We rank the importance scores for each model and dependent variable combination, and compare the concordance in rankings across different tuning parameter combinations for each dependent variable. We present summary statistics below, however, the replication archive enables the curious reader to examine the ranks or raw importance scores directly, for any tuning parameter and dependent variable combination considered. The raw percentage agreement is low, which is to be expected given the large number of ranks. We thus compute percentage agreement with a tolerance for discordance equal to plus or minus the square root of the number of explanatory variables, which is approximately 6.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & Percent Rank Agreement (+/- 6 ranks) & Concordance \\ 
+  \hline
+Disappearances & 64.52 & 0.95 \\ 
+  Killings & 64.52 & 0.93 \\ 
+  Political Imprisonment & 93.55 & 0.98 \\ 
+  Torture & 74.19 & 0.96 \\ 
+  Political Terror Scale & 74.19 & 0.95 \\ 
+  Physical Integrity Index & 90.32 & 0.98 \\ 
+  Dynamic Latent Score & 100.00 & 0.98 \\ 
+  \hline
+\end{tabular}
+\caption{Percent agreement and Kendall's coefficient of concordance W, computed for the ranks of the permutation importance estimates for each dependent variable (indicated by the rows) across different values of the tuning parameters. The number of variables considered at each split is set to be 3, 5, 10, 15 (the value used in the main results is 10), and the number of trees grown in each forest is set to be 500, 1000, or 3000. Every possible combination of these tuning parameters is used.}
+\end{table}
+
+For the main results we set 10 variables to be randomly selected for each node and 1000 trees to be grown for each forest. Additionally, we use the bootstrap to display the stability of the permutation importance estimates subject to variation in the input data. While it is possible to bootstrap each of the possible tuning parameter and dependent variable combinations above, and then compare the overlap of the simulated sampling distribution of the permutation importance scores, the computation time was extreme. For the interested reader it simple to make this comparison given our replication code.
 
 \end{document}
