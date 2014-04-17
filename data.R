@@ -132,12 +132,15 @@ df$type[is.na(df$type)] <- 0
 df$int[is.na(df$int)] <- 0
 df$cumint[is.na(df$cumint)] <- 0
 df$military[is.na(df$military)] <- 0
+df$military[df$military == -999] <- NA
 df$ingo_uia <- log(df$ingo_uia + 1)
 df$cwar <- ifelse((df$type == 3 | df$type == 4) & df$cumint == 1, 1, 0)
 df$iwar <- ifelse(df$type == 2 & df$cumint == 1, 1, 0)
 df$rentspc <- log(df$rentspc + 1)
 df$trade_gdp <- log(df$trade_gdp)
 df$execrlc[df$execrlc == -999] <- NA
+df$gdppc <- log(df$gdppc)
+df$pop <- log(df$pop)
 
 df <- aggregate(df, by = list(df$ccode, df$year), max)[, -c(1:2)]
 df <- ddply(df, .(ccode), transform, ainr_lag = c(NA, ainr[-length(ainr)]),

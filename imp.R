@@ -2,6 +2,7 @@ set.seed(1987)
 require(multicore)
 require(party)
 require(irr)
+require(xtable)
 
 FormatImp <- function(imp) {
   imp <- lapply(imp, function(x) do.call(rbind, x))
@@ -37,8 +38,8 @@ check <- function(y, mtry = c(3, 5, 10, 15), ntree = c(500, 1000, 3000)) {
 }
 
 ck <- lapply(c(lrm.vars, ols.vars[-2]), function(y) check(y))
-ack <- lapply(ck, function(x) agree(x, 6)$value)
 kck <- lapply(ck, function(x) kendall(x, TRUE)$value)
-as <- data.frame("agreement" = unlist(ack), "tau" = unlist(kck))
+ka <- lapply(ck, function(x) kripp.alpha(t(x), "ordinal")$value)
+as <- data.frame("w" = unlist(kck), "alpha" = unlist(ka))
 row.names(as) <- c(lrm.labs, ols.labs[-2])
 xtable(as)

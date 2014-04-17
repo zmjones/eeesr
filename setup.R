@@ -1,4 +1,4 @@
-CORES <- 7
+CORES <- 8
 CV_FOLD <- 10
 CV_ITER <- 1000
 MI_ITER <- 5
@@ -8,7 +8,7 @@ PANEL_BORDER <- .25
 
 pkgs <- c("plyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
           "countrycode", "foreign", "rms", "multicore", "party", "mice",
-          "irr", "xtable")
+          "polycor", "irr", "xtable")
 invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
                  install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
 
@@ -19,8 +19,7 @@ df$tort <- as.ordered(df$tort)
 df$polpris <- as.ordered(df$polpris)
 df$physint <- as.ordered(df$physint)
 df$amnesty <- as.ordered(df$amnesty)
-df$gdppc <- log(df$gdppc)
-df$pop <- log(df$pop)
+df$wbimfstruct <- as.integer(df$wbimfstruct)
 df <- df[!is.na(df$physint) & !is.na(df$amnesty), ]
 
 lrm.vars <- c("disap", "kill", "polpris", "tort", "amnesty")
