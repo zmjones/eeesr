@@ -139,8 +139,6 @@ df$iwar <- ifelse(df$type == 2 & df$cumint == 1, 1, 0)
 df$rentspc <- log(df$rentspc + 1)
 df$trade_gdp <- log(df$trade_gdp)
 df$execrlc[df$execrlc == -999] <- NA
-df$gdppc <- log(df$gdppc)
-df$pop <- log(df$pop)
 
 df <- aggregate(df, by = list(df$ccode, df$year), max)[, -c(1:2)]
 df <- ddply(df, .(ccode), transform, ainr_lag = c(NA, ainr[-length(ainr)]),

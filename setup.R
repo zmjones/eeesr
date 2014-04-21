@@ -13,6 +13,8 @@ invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
                  install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
 
 df <- read.csv("./data/rep.csv")
+df$gdppc <- log(df$gdppc)
+df$pop <- log(df$pop)
 df$disap <- as.ordered(df$disap)
 df$kill <- as.ordered(df$kill)
 df$tort <- as.ordered(df$tort)
