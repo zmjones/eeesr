@@ -1,6 +1,6 @@
 Code for "[An Empirical Evaluation of Explanations for State Repression](http://zmjones.com/static/papers/eeesr_manuscript.pdf)," by [Daniel Hill](http://myweb.fsu.edu/dwh06c/) and [Zachary Jones](http://zmjones.com). Forthcoming at the *American Political Science Review*.
 
-	@article{hill2013empirical,
+	@article{hill2014empirical,
 	  title={An Empirical Evaluation of Explanations for State Repression},
 	  author={Hill Jr., Daniel W. and Jones, Zachary M.},
 	  journal={American Political Science Reivew},

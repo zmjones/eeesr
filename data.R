@@ -1,3 +1,4 @@
+options(stringsAsFactors = FALSE)
 pkgs <- c("plyr", "countrycode", "foreign", "stringr", "lubridate")
 invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
                  install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))

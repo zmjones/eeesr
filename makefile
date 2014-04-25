@@ -10,7 +10,7 @@ $(SUBDIRS):
 	make -C $@
 
 un_utilities.Rout: get_un.sh
-	source "get_un.sh"
+	./get_un.sh
 	R CMD BATCH un_utilities.R
 
 data/rep.csv: data.R get_un.sh
