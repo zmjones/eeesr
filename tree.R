@@ -1,6 +1,7 @@
 require(party)
+options(stringsAsFactors = FALSE)
 
-df <- read.csv("./data/rep.csv")[, c(12,35:36)]
+df <- read.csv("./data/rep.csv")[, c(12,35,37)]
 df <- df[!is.na(df$polpris), ]
 df <- df[sample(row.names(df), 500), ]
 df$polpris <- as.ordered(df$polpris)

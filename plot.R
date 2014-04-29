@@ -79,9 +79,9 @@ PlotCater(imp[c(1:4)], "imp-ciri", "Permutation Importance", imp = TRUE)
 PlotCater(imp[c(5:7)], "imp-aggregate", "Permutation Importance", imp = TRUE)
 
 mi.vars <- colnames(df)[as.logical(apply(df, 2, function(x) any(is.na(x))))]
-obs <- df[, mi.vars[-c(25:31)]]
+obs <- df[, mi.vars[-c(25:32)]]
 obs$type <- "obs"
-mi <- as.data.frame(do.call("rbind", df.mi))[, mi.vars[-c(25:31)]]
+mi <- as.data.frame(do.call("rbind", df.mi))[, mi.vars[-c(25:32)]]
 i <- 1
 mi <- apply(mi, 2, function(x) {
   x <- x[is.na(obs[, i])]
@@ -89,7 +89,7 @@ mi <- apply(mi, 2, function(x) {
   return(x)
 })
 mi <- as.data.frame(apply(mi, 2, as.numeric))
-mi <- mi[, mi.vars[-c(25:31)]]
+mi <- mi[, mi.vars[-c(25:32)]]
 mi$type <- "mi"
 plot.df <- as.data.frame(rbind(obs, mi))
 plot.df <- melt(plot.df, id.vars = "type")
