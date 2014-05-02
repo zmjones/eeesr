@@ -1,0 +1,64 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsfonts,amssymb,url,graphicx}
+\usepackage[colorlinks=TRUE, citecolor=black, urlcolor=blue]{hyperref}
+\usepackage[round]{natbib}
+\bibpunct{(}{)}{;}{a}{}{,}
+\usepackage{caption}
+\graphicspath{{../figures/}}
+
+\title{Online Appendix for An Empirical Evaluation of Explanations for State Repression\thanks{Complete history of the code and manuscript are available at \url{http://github.com/zmjones/eeesr/}, along with the data and further information about how to reproduce these analyses. Thanks to Christopher Fariss, Luke Keele, and Will Moore for helpful comments.}}
+\author{Daniel W. Hill, Jr.\thanks{Assistant Professor, Department of International Affairs,
+University of Georgia. email: \href{mailto:dwhill@uga.edu}{dwhill@uga.edu}. Responsible for the research question, design of the cross-validation analysis, selection of the data, and the majority of the writing.} and Zachary M. Jones\thanks{Ph.D. student, Department of Political Science, Pennsylvania State University. email: \href{mailto:zmj@zmjones.com}{zmj@zmjones.com}. Responsible for design of the random forest analysis and multiple imputation, all data analysis and visualization, and description of the methods.}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Stability of Random Forest Results}
+
+The random forest algorithm used has two main tuning parameters, the number of variables selected for each bootstrap sample taken at each node, and the number of trees grown in the forest. If the results are unstable across these tuning parameters, this casts doubt on the reliability of the results. To verify the stability of the results we estimate permutation importance using random forests with different combinations of tuning parameters. We rank the importance scores for each model and dependent variable combination, and compare the concordance in rankings across different tuning parameter combinations for each dependent variable. We present summary statistics below, however, the replication archive enables the curious reader to examine the ranks or raw importance scores directly, for any tuning parameter and dependent variable combination considered.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & $W$ & $\alpha$ \\ 
+  \hline
+Disappearances & 0.95 & 0.95 \\ 
+  Killings & 0.94 & 0.93 \\ 
+  Political Imprisonment & 0.98 & 0.98 \\ 
+  Torture & 0.96 & 0.96 \\ 
+  Political Terror Scale & 0.95 & 0.95 \\ 
+  Physical Integrity Index & 0.97 & 0.97 \\ 
+  Dynamic Latent Score & 0.98 & 0.98 \\ 
+   \hline
+\end{tabular}
+\caption{Kendall's coefficient of concordance W and Krippendorff's $\alpha$, computed for the ranks of the permutation importance estimates for each dependent variable (indicated by the rows) across different values of the tuning parameters. The number of variables considered at each split is set to be 3, 5, 10, 15 (the value used in the main results is 10), and the number of trees grown in each forest is set to be 500, 1000, or 3000. Every possible combination of these tuning parameters is used.}
+\end{table}
+
+For the main results we set 10 variables to be randomly selected for each node and 1000 trees to be grown for each forest. Additionally, we use the bootstrap to display the stability of the permutation importance estimates subject to variation in the input data. While it is possible to bootstrap each of the possible tuning parameter and dependent variable combinations above and then compare the overlap of the simulated sampling distribution of the permutation importance scores, the necessary computation time was extreme. For the interested reader it simple to make this comparison given our replication code.
+
+\begin{figure}[!htpb]
+\includegraphics[width=\textwidth]{cor-cov.png}
+\caption{Correlations Between All Covariates. Correlations between numeric variables are Pearson product-moment correlations, correlations between numeric and ordinal variables are polyserial correlations, and correlations between ordinal variables are polychoric correlations.} 
+\label{fig:cor-cov}
+\end{figure}
+
+\section*{Imputation}
+
+To impute missing values in our data we use a combination of random forests and the random indicator method \citep{buuren2011mice,jolani2012}. The random indicator method is designed to deal with data that is not missing at random, that is, when the missing values are related to the probability of missingness. Imputing data that is not missing at random (NMAR) as if it is missing at random (MAR) may skew the distribution of the variable, biasing results. Formally, for NMAR data, $\text{Pr}(Y|X, R=1) \neq \text{Pr}(Y|X, R=0)$ if we let $Y$ be a random variable with some missingness, $R$ be the indicator function which equals 1 when the value of $Y$ is observed and 0 otherwise, and $X$ be a fully-observed covariate. The random indicator method works by first estimating a model of the probability of response $\hat{R}$ and comparing the conditional distribution of $Y$ given $R$ and $\hat{R}$. An offset $\delta_R = E(Y|R=1,\hat{R}=1) - E(Y|R=1,\hat{R}=0)$ is estimated, which, under the assumption that the variance of the missing values and the observed values of $Y$ are equal, is equivalent to $\delta_{NR} = E(Y|R=0,\hat{R}=1) - E(Y|R=0,\hat{R}=0)$ \citep{jolani2012}. Although the missingness mechanism is unknown, we use the random indicator method for all numeric covariates and classification trees for all binary, ordinal, or categorical covariates (excluding Polity and its components, which are imputed using the random indicator method). The distribution of the imputed and observed values for all variables with missingness are shown in Figure \ref{fig:mi}. Note that when data are NMAR we should expect the location of the distribution of imputed values to be different than the observed values.
+
+\begin{figure}[!htpb]
+\centering
+\includegraphics[width=\textwidth]{mi.png}
+\caption{The distribution of observed (shown in red) and imputed (shown in blue) values for all covariates with missingness. Categorical variables are imputed using classification trees and numeric variables are imputed using the random indicator method.}
+\label{fig:mi}
+\end{figure}
+
+\clearpage
+
+\bibliographystyle{apsr}
+\bibliography{eeesr_manuscript}
+
+\end{document}
