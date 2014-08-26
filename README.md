@@ -1,10 +1,13 @@
-Code for "[An Empirical Evaluation of Explanations for State Repression](http://zmjones.com/static/papers/eeesr_manuscript.pdf)," by [Daniel Hill](http://myweb.fsu.edu/dwh06c/) and [Zachary Jones](http://zmjones.com). Forthcoming at the *American Political Science Review*.
+Code for "[An Empirical Evaluation of Explanations for State Repression](http://zmjones.com/static/papers/eeesr_manuscript.pdf)," by [Daniel Hill](http://myweb.fsu.edu/dwh06c/) and [Zachary Jones](http://zmjones.com). Published in the *American Political Science Review* 108:3 (pp. 661-667). Online [here](http://journals.cambridge.org/action/displayAbstract?fromPage=online&aid=9327383&fulltextType=RA&fileId=S0003055414000306).
 
 	@article{hill2014empirical,
 	  title={An Empirical Evaluation of Explanations for State Repression},
 	  author={Hill Jr., Daniel W. and Jones, Zachary M.},
 	  journal={American Political Science Reivew},
-	  year={2014}
+	  year={2014},
+	  volume={108},
+	  issue={3},
+	  pages={661-687}
 	}
 
 [Open an issue](https://github.com/zmjones/eeesr/issues/new) or send me an [email](mailto:zmj@zmjones.com) if you have any problems or suggestions. This repository contains the complete history of the manuscript and code since we started the project. You can look at the [commits](https://github.com/zmjones/eeesr/commits/master) to see how the paper changed over time.
