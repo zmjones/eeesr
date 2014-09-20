@@ -1,6 +1,6 @@
 set.seed(1987)
 require(rms)
-require(multicore)
+require(parallel)
 require(plyr)
 options(showprogress = FALSE)
 
