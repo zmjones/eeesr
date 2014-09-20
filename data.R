@@ -22,6 +22,7 @@ paradox$country[paradox$country == "United Arab Emirat"] <- "United Arab Emirate
 paradox$ccode <- countrycode(paradox$country, "country.name", "cown")
 names(paradox) <- tolower(names(paradox))
 paradox <- paradox[, -1]
+paradox <- paradox[, c(3,1,2)]
 
 polity <- read.csv("./data/polity.csv", na.strings = c("-88", "-77", "-66", "0"))[, c(2,5,11,14:16,18)]
 polity <- na.omit(polity[polity$year >= 1981 & polity$year <= 1999, ])
@@ -106,6 +107,27 @@ latent <- read.csv("./data/farriss_latent.csv")[, c(1,3,18)]
 names(latent) <- c("year", "ccode", "latent")
 latent <- latent[latent$year >= 1981 & latent$year <= 1999, ]
 
+sanctions <- read.delim("./data/sanctionsrepdata.tab")[, c(2:3,6:7)]
+names(sanctions)[2] <- "ccode"
+sanctions <- sanctions[sanctions$year >= 1981 & sanctions$year <= 1999, ]
+
+cie <- read.dta("./data/CINE 2.0.dta")[, c(1:2,16)]
+cie <- cie[cie$year >= 1981 & cie$year <= 1999, ]
+
+cim <- read.dta("./data/cim.dta")
+names(cim)[1] <- "ccode"
+cim <- cim[cim$year >= 1981 & cim$year <= 1999, ]
+
+rol <- read.dta("./data/icrg.dta")
+names(rol)[1] <- "ccode"
+rol <- rol[rol$year >= 1981 & rol$year <= 1999, ]
+
+tr <- read.dta("./data/Wright2014JPR_replication.dta")[, c(2:3,13)]
+tr <- tr[tr$year >= 1981 & tr$year <= 1999, ]
+
+pk <- read.dta("./data/Sanctions_HumanrightsJPR - DPeksen.dta")[, c(1,4,19:23)]
+pk <- pk[pk$year >= 1981 & pk$year <= 1999, ]
+
 df <- join(paradox, polity)
 df <- join(df, ciri)
 df <- join(df, pts)
@@ -126,6 +148,12 @@ df <- join(df, cpr)
 df <- join(df, youth)
 df <- join(df, mdavis)
 df <- join(df, latent)
+df <- join(df, tr)
+df <- join(df, rol)
+df <- join(df, cim)
+df <- join(df, cie)
+df <- join(df, sanctions)
+df <- join(df, pk)
 
 df$cat_ratify[is.na(df$cat_ratify)] <- 0
 df$cpr_ratify[is.na(df$cpr_ratify)] <- 0
@@ -137,6 +165,7 @@ df$military[df$military == -999] <- NA
 df$cwar <- ifelse((df$type == 3 | df$type == 4) & df$cumint == 1, 1, 0)
 df$iwar <- ifelse(df$type == 2 & df$cumint == 1, 1, 0)
 df$execrlc[df$execrlc == -999] <- NA
+df$cim <- df$cim * 100
 
 df <- aggregate(df, by = list(df$ccode, df$year), max)[, -c(1:2)]
 df <- ddply(df, .(ccode), transform, ainr_lag = c(NA, ainr[-length(ainr)]),
@@ -149,5 +178,6 @@ df <- ddply(df, .(ccode), transform, ainr_lag = c(NA, ainr[-length(ainr)]),
             polpris_lag = c(NA, polpris[-length(polpris)]),
             tort_lag = c(NA, tort[-length(tort)]),
             latent_lag = c(NA, latent[-length(latent)]))
-df <- df[, -c(16,19:21,25:27,43)]
+drop <- c("j", "type", "int", "cumint", "ainr", "aibr", "avmdia", "hro_shaming")
+df <- df[, !(colnames(df) %in% drop)]
 write.csv(df, "./data/rep.csv", row.names = FALSE)
