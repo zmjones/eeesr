@@ -4,6 +4,8 @@ require(party)
 require(irr)
 require(xtable)
 
+CHECK <- FALSE
+
 FormatImp <- function(imp) {
     imp <- lapply(imp, function(x) do.call(rbind, x))
     imp <- lapply(imp, function(x) apply(x, 2, function(x) quantile(x, probs = c(.025, .5, .975))))
@@ -37,9 +39,12 @@ check <- function(y, mtry = c(3, 5, 10, 15), ntree = c(500, 1000, 3000)) {
     t(do.call("rbind", rc))
 }
 
-ck <- lapply(c(lrm.vars, ols.vars[-2]), function(y) check(y))
-kck <- lapply(ck, function(x) kendall(x, TRUE)$value)
-ka <- lapply(ck, function(x) kripp.alpha(t(x), "ordinal")$value)
-as <- data.frame("w" = unlist(kck), "alpha" = unlist(ka))
-row.names(as) <- c(lrm.labs, ols.labs[-2])
-xtable(as)
+if (check) {
+    ck <- lapply(c(lrm.vars, ols.vars[-2]), function(y) check(y))
+    kck <- lapply(ck, function(x) kendall(x, TRUE)$value)
+    ka <- lapply(ck, function(x) kripp.alpha(t(x), "ordinal")$value)
+    as <- data.frame("w" = unlist(kck), "alpha" = unlist(ka))
+    row.names(as) <- c(lrm.labs, ols.labs[-2])
+    xtable(as)
+}    
+
