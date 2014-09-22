@@ -6,7 +6,7 @@ B_ITER <- 100
 PLOT_BORDER <- .1
 PANEL_BORDER <- .25
 
-pkgs <- c("plyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
+pkgs <- c("dplyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
           "countrycode", "foreign", "rms", "parallel", "party", "mice",
           "polycor", "irr", "xtable")
 invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
