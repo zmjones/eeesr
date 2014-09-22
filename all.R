@@ -1,7 +1,10 @@
-require(rms)
-require(stringr)
-require(parallel)
-require(plyr)
+set.seed(1987)
+
+library(rms)
+library(stringr)
+library(parallel)
+library(plyr)
+SAVE <- TRUE
 
 Frms <- function(response, input, model, var) {
     # response: dependent variable (vector)
@@ -64,3 +67,6 @@ all.ols <- CleanAll(CallAll(ols.vars, specs, "ols"), ivar.labels)
 all.ols.cwar <- CleanAll(CallAll(ols.vars, specs.cwar, "ols"), ivar.labels.cwar)
 all.ols.lag <- CleanAll(CallAll(ols.vars, specs, "ols", TRUE), ivar.labels)
 all <- c(all.lrm, all.lrm.cwar, all.lrm.lag, all.ols, all.ols.cwar, all.ols.lag)
+
+if (SAVE)
+    save(all, file = "all.RData")

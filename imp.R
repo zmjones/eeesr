@@ -1,10 +1,9 @@
 set.seed(1987)
-require(parallel)
-require(party)
-require(irr)
-require(xtable)
+library(parallel)
+library(party)
 
-CHECK <- FALSE
+CHECK <- FALSE ## check stability over tuning parameters for appendix
+SAVE <- TRUE
 
 FormatImp <- function(imp) {
     imp <- lapply(imp, function(x) do.call(rbind, x))
@@ -29,6 +28,9 @@ imp <- lapply(c(lrm.vars, ols.vars[-2]), function(y) {
 
 imp <- FormatImp(imp)
 
+if (SAVE)
+    save(imp, file = "imp.RData")
+
 check <- function(y, mtry = c(3, 5, 10, 15), ntree = c(500, 1000, 3000)) {
     formula <- as.formula(paste0(y, "~", paste0(ivars, collapse = "+")))
     tune <- expand.grid("mtry" = mtry, "ntree" = ntree)
@@ -40,6 +42,8 @@ check <- function(y, mtry = c(3, 5, 10, 15), ntree = c(500, 1000, 3000)) {
 }
 
 if (check) {
+    library(irr)
+    library(xtable)
     ck <- lapply(c(lrm.vars, ols.vars[-2]), function(y) check(y))
     kck <- lapply(ck, function(x) kendall(x, TRUE)$value)
     ka <- lapply(ck, function(x) kripp.alpha(t(x), "ordinal")$value)

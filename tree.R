@@ -1,4 +1,4 @@
-require(party)
+library(party)
 options(stringsAsFactors = FALSE)
 
 df <- read.csv("./data/rep.csv")[, c(12,35,37)]

@@ -1,9 +1,8 @@
 options(stringsAsFactors = FALSE)
-pkgs <- c("dplyr", "countrycode", "foreign", "stringr", "lubridate")
-invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
-                                       install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
-invisible(lapply(pkgs, require, character.only = TRUE))
+pkgs <- c("plyr", "dplyr", "countrycode", "foreign", "stringr", "lubridate")
+invisible(lapply(pkgs, library, character.only = TRUE, quietly = TRUE))
 
+## read source data
 cat <- read.csv("./data/cat.csv", check.names = FALSE, na.string = "")
 cat <- expandPanel(expandColumns(cat), syear = "1981", eyear = "1999")
 cat$cat_ratify <- ifelse(cat$ratification == 1 | cat$accession == 1 | cat$succession == 1, 1, 0)
@@ -104,8 +103,8 @@ mdavis <- read.dta("./data/murdie_davis.dta")[, c(1,2,16)]
 mdavis <- mdavis[mdavis$year >= 1981 & mdavis$year <= 1999, ]
 names(mdavis)[2:3] <- c("ccode", "hro_shaming")
 
-latent <- read.csv("./data/farriss_latent.csv")[, c(1,3,18)]
-names(latent) <- c("year", "ccode", "latent")
+latent <- read.csv("./data/farriss_latent.csv")[, c(1,3,18:19)]
+names(latent) <- c("year", "ccode", "latent", "latent_sd")
 latent <- latent[latent$year >= 1981 & latent$year <= 1999, ]
 
 sanctions <- read.delim("./data/sanctionsrepdata.tab")[, c(2:3,6:7)]
@@ -142,6 +141,7 @@ df <- as.data.frame(do.call("rbind", df))
 row.names(df) <- NULL
 df <- df[df$year >= 1981 & df$year <= 1999, ]
 
+## merge source data together
 df <- df %>%
     left_join(paradox) %>%
     left_join(polity) %>%
@@ -185,6 +185,7 @@ df$cim <- df$cim * 100
 
 df <- df[!duplicated(df), ] ## don't know where these 205 come from
 
+## lag some of the variables by one year
 last_year <- df %>%
     mutate(year = year + 1,
            aibr_lag = aibr,
@@ -196,9 +197,10 @@ last_year <- df %>%
            polpris_lag = polpris,
            tort_lag = tort,
            latent_lag = latent)
-last_year <- last_year[, c(1:2,58:66)]
+last_year <- last_year[, c(1:2,59:66)]
 df <- df %>% left_join(last_year)
 
+## drop unused variables
 drop <- c("j", "type", "int", "cumint", "ainr", "aibr", "avmdia", "hro_shaming")
 df <- df[, !(colnames(df) %in% drop)]
 write.csv(df, "./data/rep.csv", row.names = FALSE)

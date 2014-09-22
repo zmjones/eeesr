@@ -1,16 +1,12 @@
-CORES <- 8
+library(parallel)
+
+CORES <- detectCores()
 CV_FOLD <- 10
 CV_ITER <- 100
 MI_ITER <- 5
 B_ITER <- 100
 PLOT_BORDER <- .1
 PANEL_BORDER <- .25
-
-pkgs <- c("dplyr", "stringr", "lubridate", "ggplot2", "reshape2", "grid",
-          "countrycode", "foreign", "rms", "parallel", "party", "mice",
-          "polycor", "irr", "xtable")
-invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
-                                       install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
 
 df <- read.csv("./data/rep.csv")
 df$gdppc <- log(df$gdppc)

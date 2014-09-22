@@ -1,4 +1,4 @@
-require(rms)
+library(rms)
 source("setup.R")
 
 check <- function(form) {

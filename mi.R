@@ -1,8 +1,27 @@
-require(mice)
+set.seed(1987)
 
-methods <- c(rep("", 3), rep("ri", 5), rep("", 5), "", "", rep("ri", 3),
-             "rf", rep("ri", 3), rep("rf", 7), "", "", rep("rf", 3), "ri", "",
-             "rf", "rf", "ri", "ri", rep("rf", 7), "", "", rep("ri", 4), rep("", 7))
+library(mice)
+library(foreach)
+library(iterators)
+library(doParallel)
+library(parallel)
+registerDoParallel(makeCluster(detectCores()))
 
-mi <- mice(df, m = MI_ITER, method = methods, print = FALSE)
-df.mi <- lapply(seq(1, MI_ITER), function(x) complete(mi, x))
+SAVE <- TRUE
+
+## check total na
+## apply(df, 2, function(x) sum(is.na(x)))
+mi_methods <- sapply(colnames(df), function(x) {
+    if (any(is.na(df[, x])) & !any(x %in% c(lrm.vars, ols.vars, paste0(c(lrm.vars, ols.vars), "_lag")))) {
+        if ((is.integer(df[, x]) & length(unique(df[, x])) > 10) | is.numeric(df[, x]))
+            "ri"
+
+        else
+            "rf"
+    }
+    else ""
+})
+
+mi <- foreach(icount(MI_ITER), .packages = "mice") %dopar% complete(mice(df, 1, mi_methods, print = FALSE))
+if (SAVE)
+    save(mi, file = "mi.RData")

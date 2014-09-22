@@ -1,8 +1,8 @@
-require(ggplot2)
-require(reshape2)
-require(plyr)
-require(grid)
-require(polycor)
+library(ggplot2)
+library(reshape2)
+library(plyr)
+library(grid)
+library(polycor)
 
 setBreaks <- function(x) {
   range <- max(x) - min(x)
