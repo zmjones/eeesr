@@ -30,7 +30,7 @@ ols.labs <- c("Physical Integrity Index", "Political Terror Scale", "Dynamic Lat
 ciri.vars <- lrm.vars[1:4]
 base.spec <- "~ log(gdppc) + log(pop)"
 ivars <- colnames(df)[!colnames(df) %in% c("ccode", "year", ciri.vars,
-                                           "physint", "amnesty", "gdppc", "pop", "latent",
+                                           "physint", "amnesty", "gdppc", "pop", "latent", "latent_sd",
                                            "physint_lag", "amnesty_lag", "disap_lag",
                                            "kill_lag", "polpris_lag", "tort_lag", "latent_lag")]
 specs <- paste0("~ gdppc + pop + ", ivars)
@@ -45,6 +45,5 @@ ivar.labels <- c("log INGOs", "Polity", "Executive Compet.", "Executive Open.",
                  "US Sanction (lag)", "UN Sanction (lag)", "Any Sanction", "HR Sanctions",
                  "Non-HR Sanctions", "Multilateral Sanction", "Unilateral Sanction",
                  "Civil War", "International War", "AI Press (lag)", "AI Background (lag)",
-                 "Western Media (lag)",
-                 "HRO Shaming (lag)")
+                 "Western Media (lag)", "HRO Shaming (lag)")
 ivar.labels.cwar <- ivar.labels[!(ivar.labels %in% "Civil War")]

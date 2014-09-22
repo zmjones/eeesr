@@ -189,6 +189,8 @@ df <- df[!duplicated(df), ] ## don't know where these 205 come from
 last_year <- df %>%
     mutate(year = year + 1,
            aibr_lag = aibr,
+           ainr_lag = ainr,
+           avmdia_lag = avmdia,
            hro_shaming_lag = hro_shaming,
            physint_lag = physint,
            amnesty_lag = amnesty,
@@ -197,7 +199,7 @@ last_year <- df %>%
            polpris_lag = polpris,
            tort_lag = tort,
            latent_lag = latent)
-last_year <- last_year[, c(1:2,59:66)]
+last_year <- last_year[, c(1:2, which(grepl("_lag", colnames(last_year))))]
 df <- df %>% left_join(last_year)
 
 ## drop unused variables
