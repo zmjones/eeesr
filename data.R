@@ -1,7 +1,7 @@
 options(stringsAsFactors = FALSE)
-pkgs <- c("plyr", "countrycode", "foreign", "stringr", "lubridate")
+pkgs <- c("dplyr", "countrycode", "foreign", "stringr", "lubridate")
 invisible(lapply(pkgs, function(x) if(!is.element(x, installed.packages()[, 1]))
-                 install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
+                                       install.packages(x, repos = c(CRAN = "http://cran.rstudio.com"))))
 invisible(lapply(pkgs, require, character.only = TRUE))
 
 cat <- read.csv("./data/cat.csv", check.names = FALSE, na.string = "")
@@ -25,33 +25,34 @@ paradox <- paradox[, -1]
 paradox <- paradox[, c(3,1,2)]
 
 polity <- read.csv("./data/polity.csv", na.strings = c("-88", "-77", "-66", "0"))[, c(2,5,11,14:16,18)]
-polity <- na.omit(polity[polity$year >= 1981 & polity$year <= 1999, ])
+polity <- polity[polity$year >= 1981 & polity$year <= 1999, ]
 
 ciri <- read.csv("./data/ciri_hr.csv", na.strings = c("-999", "-77", "-66"))
 names(ciri) <- tolower(names(ciri))
-ciri <- na.omit(ciri[ciri$year <= 1999, ])
+ciri <- ciri[ciri$year <= 1999, ]
 names(ciri)[2] <- "ccode"
 
 pts <- read.csv("./data/pts.csv")
-pts <- na.omit(pts[pts$Year <= 1999 & pts$Year >= 1981, c(3,5:6)])
+pts <- pts[pts$Year <= 1999 & pts$Year >= 1981, c(3,5:6)]
 names(pts) <- tolower(names(pts))
 names(pts)[1] <- "ccode"
 
 polcon <- read.csv("./data/polcon.csv")[ ,c(2,7,13)]
 names(polcon) <- tolower(names(polcon))
-polcon <- na.omit(polcon[polcon$year >= 1981 & polcon$year <= 1999, ])
+polcon <- polcon[polcon$year >= 1981 & polcon$year <= 1999, ]
 
 exgdp <- read.table("./data/exgdp.dat", sep = " ", header = TRUE)[, -c(2,5,7)]
 names(exgdp)[1] <- "ccode"
-exgdp <- na.omit(exgdp[exgdp$year >= 1981 & exgdp$year <= 1999, ])
+exgdp <- exgdp[exgdp$year >= 1981 & exgdp$year <= 1999, ]
 
 acd <- read.csv("./data/acd.csv")[, c(21,10,13,11:12)]
 names(acd) <- c("ccode", "year", "type", "int", "cumint")
-acd <- na.omit(acd[acd$year >= 1981 & acd$year <= 1999, ])
+acd <- acd[acd$year >= 1981 & acd$year <= 1999, ]
+acd$ccode <- as.integer(acd$ccode)
 
 oil <- read.dta("./data/oil_hr.dta")[, c(1,5,129)]
 names(oil) <- tolower(names(oil))
-oil <- na.omit(oil[oil$year >= 1981 & oil$year <= 1999, ])
+oil <- oil[oil$year >= 1981 & oil$year <= 1999, ]
 names(oil)[3] <- "rentspc"
 
 dpi <- read.dta("./data/dpi.dta")[, c(1,3,9,15)]
@@ -65,12 +66,12 @@ dpi$countryname[dpi$countryname == "P. N. Guinea"] <- "Papua New Guinea"
 dpi$countryname[dpi$countryname == "PRK"] <- "People's Republic of Korea"
 dpi$countryname[dpi$countryname == "S. Africa"] <- "South Africa"
 dpi$ccode <- countrycode(dpi$countryname, "country.name", "cown")
-dpi <- na.omit(dpi[dpi$year >= 1981 & dpi$year <= 1999, -1])
+dpi <- dpi[dpi$year >= 1981 & dpi$year <= 1999, -1]
 dpi[is.na(dpi$military), ] <- 0 
 
 hill_isq <- read.dta("./data/hill_isq_rep.dta")[, c(3,2,10:11,17)]
 names(hill_isq)[1] <- "ccode"
-hill_isq <- na.omit(hill_isq[hill_isq$year >= 1981 & hill_isq$year <= 1999, ])
+hill_isq <- hill_isq[hill_isq$year >= 1981 & hill_isq$year <= 1999, ]
 
 civ_libs <- read.csv("./data/civ_libs_ick.csv", na.strings = ".")[, c(2:3,12:13)]
 names(civ_libs) <- tolower(names(civ_libs))
@@ -128,32 +129,46 @@ tr <- tr[tr$year >= 1981 & tr$year <= 1999, ]
 pk <- read.dta("./data/Sanctions_HumanrightsJPR - DPeksen.dta")[, c(1,4,19:23)]
 pk <- pk[pk$year >= 1981 & pk$year <= 1999, ]
 
-df <- join(paradox, polity)
-df <- join(df, ciri)
-df <- join(df, pts)
-df <- join(df, polcon)
-df <- join(df, exgdp)
-df <- join(df, acd)
-df <- join(df, oil)
-df <- join(df, dpi)
-df <- join(df, hill_isq)
-df <- join(df, wb)
-df <- join(df, civ_libs)
-df <- join(df, soe_jud)
-df <- join(df, a_cbook)
-df <- join(df, mitch)
-df <- join(df, sb)
-df <- join(df, cat)
-df <- join(df, cpr)
-df <- join(df, youth)
-df <- join(df, mdavis)
-df <- join(df, latent)
-df <- join(df, tr)
-df <- join(df, rol)
-df <- join(df, cim)
-df <- join(df, cie)
-df <- join(df, sanctions)
-df <- join(df, pk)
+df <- read.delim("./data/GW.txt")[, -c(2:3)]
+df$start <- year(dmy(df$start.date))
+df$end <- year(dmy(df$end.date))
+
+df <- apply(df[, -c(2:3)], 1, function(x) {
+    year <- seq(x[2], x[3])
+    ccode <- rep(x[1], length(years))
+    cbind(ccode, year)
+})
+df <- as.data.frame(do.call("rbind", df))
+row.names(df) <- NULL
+df <- df[df$year >= 1981 & df$year <= 1999, ]
+
+df <- left_join(df, paradox)
+df <- left_join(df, polity)
+df <- left_join(df, ciri)
+df <- left_join(df, pts)
+df <- left_join(df, polcon)
+df <- left_join(df, exgdp)
+df <- left_join(df, acd)
+df <- left_join(df, oil)
+df <- left_join(df, dpi)
+df <- left_join(df, hill_isq)
+df <- left_join(df, wb)
+df <- left_join(df, civ_libs)
+df <- left_join(df, soe_jud)
+df <- left_join(df, a_cbook)
+df <- left_join(df, mitch)
+df <- left_join(df, sb)
+df <- left_join(df, cat)
+df <- left_join(df, cpr)
+df <- left_join(df, youth)
+df <- left_join(df, mdavis)
+df <- left_join(df, latent)
+df <- left_join(df, tr)
+df <- left_join(df, rol)
+df <- left_join(df, cim)
+df <- left_join(df, cie)
+df <- left_join(df, sanctions)
+df <- left_join(df, pk)
 
 df$cat_ratify[is.na(df$cat_ratify)] <- 0
 df$cpr_ratify[is.na(df$cpr_ratify)] <- 0
@@ -167,17 +182,22 @@ df$iwar <- ifelse(df$type == 2 & df$cumint == 1, 1, 0)
 df$execrlc[df$execrlc == -999] <- NA
 df$cim <- df$cim * 100
 
-df <- aggregate(df, by = list(df$ccode, df$year), max)[, -c(1:2)]
-df <- ddply(df, .(ccode), transform, ainr_lag = c(NA, ainr[-length(ainr)]),
-            aibr_lag = c(NA, aibr[-length(aibr)]), avmdia_lag = c(NA, avmdia[-length(avmdia)]),
-            hro_shaming_lag = c(NA, hro_shaming[-length(hro_shaming)]),
-            physint_lag = c(NA, physint[-length(physint)]),
-            amnesty_lag = c(NA, amnesty[-length(amnesty)]),
-            disap_lag = c(NA, disap[-length(disap)]),
-            kill_lag = c(NA, kill[-length(kill)]),
-            polpris_lag = c(NA, polpris[-length(polpris)]),
-            tort_lag = c(NA, tort[-length(tort)]),
-            latent_lag = c(NA, latent[-length(latent)]))
+df <- df[!duplicated(df), ] ## don't know where these 205 come from
+
+last_year <- df %>%
+    mutate(year = year + 1,
+           aibr_lag = aibr,
+           hro_shaming_lag = hro_shaming,
+           physint_lag = physint,
+           amnesty_lag = amnesty,
+           disap_lag = disap,
+           kill_lag = kill,
+           polpris_lag = polpris,
+           tort_lag = tort,
+           latent_lag = latent)
+last_year <- last_year[, c(1:2,58:66)]
+df <- df %>% left_join(last_year)
+
 drop <- c("j", "type", "int", "cumint", "ainr", "aibr", "avmdia", "hro_shaming")
 df <- df[, !(colnames(df) %in% drop)]
 write.csv(df, "./data/rep.csv", row.names = FALSE)
