@@ -142,33 +142,34 @@ df <- as.data.frame(do.call("rbind", df))
 row.names(df) <- NULL
 df <- df[df$year >= 1981 & df$year <= 1999, ]
 
-df <- left_join(df, paradox)
-df <- left_join(df, polity)
-df <- left_join(df, ciri)
-df <- left_join(df, pts)
-df <- left_join(df, polcon)
-df <- left_join(df, exgdp)
-df <- left_join(df, acd)
-df <- left_join(df, oil)
-df <- left_join(df, dpi)
-df <- left_join(df, hill_isq)
-df <- left_join(df, wb)
-df <- left_join(df, civ_libs)
-df <- left_join(df, soe_jud)
-df <- left_join(df, a_cbook)
-df <- left_join(df, mitch)
-df <- left_join(df, sb)
-df <- left_join(df, cat)
-df <- left_join(df, cpr)
-df <- left_join(df, youth)
-df <- left_join(df, mdavis)
-df <- left_join(df, latent)
-df <- left_join(df, tr)
-df <- left_join(df, rol)
-df <- left_join(df, cim)
-df <- left_join(df, cie)
-df <- left_join(df, sanctions)
-df <- left_join(df, pk)
+df <- df %>%
+    left_join(paradox) %>%
+    left_join(polity) %>%
+    left_join(ciri) %>%
+    left_join(pts) %>%
+    left_join(polcon) %>%
+    left_join(exgdp) %>%
+    left_join(acd) %>%
+    left_join(oil) %>%
+    left_join(dpi) %>%
+    left_join(hill_isq) %>%
+    left_join(wb) %>%
+    left_join(civ_libs) %>%
+    left_join(soe_jud) %>%
+    left_join(a_cbook) %>%
+    left_join(mitch) %>%
+    left_join(sb) %>%
+    left_join(cat) %>%
+    left_join(cpr) %>%
+    left_join(youth) %>%
+    left_join(mdavis) %>%
+    left_join(latent) %>%
+    left_join(tr) %>%
+    left_join(rol) %>%
+    left_join(cim) %>%
+    left_join(cie) %>%
+    left_join(sanctions) %>%
+    left_join(pk)
 
 df$cat_ratify[is.na(df$cat_ratify)] <- 0
 df$cpr_ratify[is.na(df$cpr_ratify)] <- 0
