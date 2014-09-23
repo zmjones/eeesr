@@ -38,17 +38,18 @@ CallCV <- function(vars, specs, model, lag = FALSE) {
     # model: string vector (length 1), either "lrm" or "ols"
     # lag: logical, use a LDV?
     # returns: list of lists with cv results
-    cv <- lapply(vars, function(y) {
-        lapply(seq(1, MI_ITER), function(z) {
-            mclapply(specs, function(x) {
+    foreach(y = vars) %do% {
+        foreach(z = 1:MI_ITER) %do% {
+            foreach(x = specs) %dopar% {
                 if (lag == TRUE) {
                     df <- na.omit(df.mi[[z]])
                     x <- paste0(x, "+", y, "_lag")
                 }
-                else df <- df.mi[[z]]
+                else <- df <- df.mi[[z]]
                 CVrms(df[, y], model.matrix(as.formula(x), df)[, -1], CV_FOLD, CV_ITER, model)
-            }, mc.cores = CORES)})})
-    return(cv)
+            }
+        }
+    }
 }
 
 specs <- c("~ gdppc + pop", specs)

@@ -1,10 +1,13 @@
 set.seed(1987)
-
-library(rms)
+library(party)
+library(foreach)
+library(iterators)
+library(doParallel)
 library(parallel)
+library(rms)
 library(plyr)
+registerDoParallel(makeCluster(detectCores()))
 options(showprogress = FALSE)
-SAVE <- TRUE
 
 cv.lrm <- CleanCV(CallCV(lrm.vars, specs, "lrm"),
                   c("log GDP per cap. + log Pop.", ivar.labels))
@@ -19,6 +22,4 @@ cv.ols.cwar <- CleanCV(CallCV(ols.vars, specs.cwar, "ols"),
 cv.ols.lag <- CleanCV(CallCV(ols.vars[-3], specs, "ols", TRUE),
                       c("log GDP per cap. + log Pop. + LDV", ivar.labels))
 cv <- c(cv.lrm, cv.lrm.cwar, cv.lrm.lag, cv.ols, cv.ols.cwar, cv.ols.lag)
-
-if (SAVE)
-    save(cv, file = "cv.RData")
+save(cv, file = "cv.RData")
