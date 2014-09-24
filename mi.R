@@ -23,5 +23,4 @@ mi_methods <- sapply(colnames(df), function(x) {
 })
 
 df.mi <- foreach(icount(MI_ITER), .packages = "mice") %dopar% complete(mice(df, 1, mi_methods, print = FALSE))
-if (SAVE)
-    save(mi, file = "mi.RData")
+save(df.mi, file = "mi.RData")

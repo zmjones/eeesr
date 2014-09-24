@@ -40,12 +40,13 @@ CallCV <- function(vars, specs, model, lag = FALSE) {
     # returns: list of lists with cv results
     foreach(y = vars) %do% {
         foreach(z = 1:MI_ITER) %do% {
-            foreach(x = specs) %dopar% {
+            foreach(x = specs, .inorder = FALSE,
+                    .export = c("df.mi", "CVrms", "CV_FOLD", "CV_ITER"),
+                    .packages = "rms") %dopar% {
                 if (lag == TRUE) {
                     df <- na.omit(df.mi[[z]])
                     x <- paste0(x, "+", y, "_lag")
-                }
-                else <- df <- df.mi[[z]]
+                } else df <- df.mi[[z]]
                 CVrms(df[, y], model.matrix(as.formula(x), df)[, -1], CV_FOLD, CV_ITER, model)
             }
         }
