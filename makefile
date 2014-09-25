@@ -1,7 +1,8 @@
-all: data analysis paper
+all: data analysis paper publish
 paper: plot.Rout tree.Rout subdirs
 analysis: all.Rout imp.Rout cv_setup.Rout cv.Rout
 data: un_utilities.Rout data/rep.csv setup.Rout mi.Rout
+publish: eeesr_rep.zip eeesr_data.zip
 
 SUBDIRS = manuscript ## presentation
 .PHONY: subdirs $(SUBDIRS)
@@ -41,6 +42,12 @@ plot.Rout: plot.R all.Rout cv.Rout imp.Rout mi.Rout
 
 tree.Rout: tree.R
 	R CMD BATCH tree.R
+
+eeesr_data.zip:
+	zip $@ data/*
+
+eeesr_rep.zip:
+	zip $@ *.RData
 
 clean_all:
 	find . | egrep ".*((\.(RData|Rout|Rhistory))|~)$$" | xargs rm

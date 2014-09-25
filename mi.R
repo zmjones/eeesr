@@ -7,8 +7,6 @@ library(doParallel)
 library(parallel)
 registerDoParallel(makeCluster(detectCores()))
 
-SAVE <- TRUE
-
 ## check total na
 ## apply(df, 2, function(x) sum(is.na(x)))
 mi_methods <- sapply(colnames(df), function(x) {
