@@ -13,7 +13,7 @@ setBreaks <- function(x) {
 
 PlotCater <- function(df, file.prefix, xlab = "Coefficient", mtype = "LRM", all = FALSE, imp = FALSE) {
   scale <- .85
-  height <- 6
+  height <- 8
   width <- 12
   if (all == FALSE) {
     if (mtype == "LRM")
@@ -78,10 +78,10 @@ PlotCater(all[c(22:23)], "all-ols-ldv", all = TRUE)
 PlotCater(imp[c(1:4)], "imp-ciri", "Permutation Importance", imp = TRUE)
 PlotCater(imp[c(5:7)], "imp-aggregate", "Permutation Importance", imp = TRUE)
 
-mi.vars <- colnames(df)[as.logical(apply(df, 2, function(x) any(is.na(x))))]
-obs <- df[, mi.vars[-c(25:32)]]
+mi.vars <- colnames(df)[as.logical(apply(df, 2, function(x) any(is.na(x)))) & !(colnames(df) %in% depvars)]
+obs <- df[, mi.vars]
 obs$type <- "obs"
-mi <- as.data.frame(do.call("rbind", df.mi))[, mi.vars[-c(25:32)]]
+mi <- as.data.frame(do.call("rbind", df.mi))[, mi.vars]
 i <- 1
 mi <- apply(mi, 2, function(x) {
   x <- x[is.na(obs[, i])]
@@ -89,16 +89,10 @@ mi <- apply(mi, 2, function(x) {
   return(x)
 })
 mi <- as.data.frame(apply(mi, 2, as.numeric))
-mi <- mi[, mi.vars[-c(25:32)]]
 mi$type <- "mi"
 plot.df <- as.data.frame(rbind(obs, mi))
 plot.df <- melt(plot.df, id.vars = "type")
-mi.labels <- c("Polity", "Executive Compet.", "Executive Open.", "Executive Const.",
-               "Participation Compet.", "log Population", "log GDP per capita",
-               "log Oil Rents", "Left Executive", "log Trade/GDP", "FDI", "Public Trial",
-               "Fair Trial", "Court Decision Final", "Legislative Approval", "WB/IMF Structural Adj.",
-               "IMF Structural Adj.", "WB Structural Adj.", "PTA w/ HR Clause", "Youth Bulge",
-               "AI Press (lag)", "AI Background (lag)", "Western Media (lag)", "HRO Shaming (lag)")
+mi.labels <- ivar.labels[-c(20:21,23:24,26,37:38)] ## remove fully observed variable labels
 plot.df$type <- factor(plot.df$type, levels = unique(plot.df$type), labels = c("Observed", "Imputed"))
 plot.df$variable <- factor(plot.df$variable, levels = unique(plot.df$variable), labels = mi.labels)
 p <- ggplot(data = na.omit(plot.df), aes(x = value))
@@ -111,7 +105,7 @@ ggsave("figures/mi.png", plot = p, width = 10, height = 10)
 
 depvars <- c(lrm.vars, "physint", "latent")
 depvars <- c(depvars, paste0(depvars, "_lag"))
-plot.df <- df[, !colnames(df) %in% c("ccode", "year", "gdppc", "pop", depvars)]
+plot.df <- df[, !colnames(df) %in% c("ccode", "year", "gdppc", "pop", "latent_sd", depvars)]
 colnames(plot.df) <- c(ivar.labels)
 plot.df <- melt(hetcor(plot.df, use = "pairwise.complete.obs")$correlations)
 plot.df <- plot.df[order(plot.df$value), ]
@@ -124,4 +118,4 @@ p <- p + scale_fill_gradient2(name = "Correlation", breaks = seq(-1, 1, by = .25
 p <- p + guides(fill = guide_colorbar(barwidth = .75, ticks = FALSE))
 p <- p + labs(x = NULL, y = NULL)
 p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
-ggsave("./figures/cor-cov.png", plot = p, width = 8, height = 8)
+ggsave("./figures/cor-cov.png", plot = p, width = 9, height = 9)
