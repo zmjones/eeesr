@@ -25,7 +25,6 @@ imp <- foreach(y = c(lrm.vars, ols.vars[-2]), .packages = "party") %do% {
         varimp(cforest(form, df, control = cforest_unbiased(mtry = 10, ntree = 1000)))
     }
 }
-
 save(imp, file = "imp.RData")
 
 check <- function(y, mtry = c(3, 5, 10, 15), ntree = c(500, 1000, 3000)) {

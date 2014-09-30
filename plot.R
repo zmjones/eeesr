@@ -78,7 +78,10 @@ PlotCater(all[c(22:23)], "all-ols-ldv", all = TRUE)
 PlotCater(imp[c(1:4)], "imp-ciri", "Permutation Importance", imp = TRUE)
 PlotCater(imp[c(5:7)], "imp-aggregate", "Permutation Importance", imp = TRUE)
 
-mi.vars <- colnames(df)[as.logical(apply(df, 2, function(x) any(is.na(x)))) & !(colnames(df) %in% depvars)]
+depvars <- c(lrm.vars, "physint", "latent")
+depvars <- c(depvars, paste0(depvars, "_lag"))
+mi.vars <- colnames(df)[as.logical(apply(df, 2, function(x)
+    any(is.na(x)))) & !(colnames(df) %in% depvars)]
 obs <- df[, mi.vars]
 obs$type <- "obs"
 mi <- as.data.frame(do.call("rbind", df.mi))[, mi.vars]
@@ -103,8 +106,6 @@ p <- p + theme_bw()
 p <- p + theme(legend.title = element_blank())
 ggsave("figures/mi.png", plot = p, width = 10, height = 10)
 
-depvars <- c(lrm.vars, "physint", "latent")
-depvars <- c(depvars, paste0(depvars, "_lag"))
 plot.df <- df[, !colnames(df) %in% c("ccode", "year", "gdppc", "pop", "latent_sd", depvars)]
 colnames(plot.df) <- c(ivar.labels)
 plot.df <- melt(hetcor(plot.df, use = "pairwise.complete.obs")$correlations)

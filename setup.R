@@ -1,10 +1,10 @@
 library(parallel)
 
-CORES <- detectCores()
+CORES <- 24
 CV_FOLD <- 10
 CV_ITER <- 1000
 MI_ITER <- 5
-B_ITER <- 1000
+B_ITER <- 100
 PLOT_BORDER <- .1
 PANEL_BORDER <- .25
 
