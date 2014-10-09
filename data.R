@@ -18,7 +18,7 @@ cpr <- cpr[, c(8,2,7)]
 paradox <- read.delim("./data/paradox_rep.tab")
 paradox <- paradox[paradox$year >= 1981, ]
 paradox$country[paradox$country == "United Arab Emirat"] <- "United Arab Emirates"
-paradox$ccode <- countrycode(paradox$country, "country.name", "cown")
+paradox$ccode <- countrycode(paradox$country, "country.name", "cown") ## goodbye dutch antilles!
 names(paradox) <- tolower(names(paradox))
 paradox <- paradox[, -1]
 paradox <- paradox[, c(3,1,2)]
@@ -125,7 +125,7 @@ rol <- rol[rol$year >= 1981 & rol$year <= 1999, ]
 tr <- read.dta("./data/Wright2014JPR_replication.dta")[, c(2:3,13)]
 tr <- tr[tr$year >= 1981 & tr$year <= 1999, ]
 
-pk <- read.dta("./data/Sanctions_HumanrightsJPR - DPeksen.dta")[, c(1,4,19:23)]
+pk <- read.dta("./data/Sanctions_HumanrightsJPR - DPeksen.dta")[, c(1,4,20,21)]
 pk <- pk[pk$year >= 1981 & pk$year <= 1999, ]
 
 df <- read.delim("./data/GW.txt")[, -c(2:3)]

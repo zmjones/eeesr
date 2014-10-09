@@ -1,5 +1,3 @@
-library(parallel)
-
 CORES <- 24
 CV_FOLD <- 10
 CV_ITER <- 1000
@@ -7,6 +5,7 @@ MI_ITER <- 5
 B_ITER <- 100
 PLOT_BORDER <- .1
 PANEL_BORDER <- .25
+original <- FALSE
 
 df <- read.csv("./data/rep.csv")
 df$gdppc <- log(df$gdppc)
@@ -22,6 +21,8 @@ df$physint <- as.ordered(df$physint)
 df$amnesty <- as.ordered(df$amnesty)
 df$wbimfstruct <- as.integer(df$wbimfstruct)
 df <- df[!is.na(df$physint) & !is.na(df$amnesty), ]
+non_original <- c("terrrev", "laworder", "cim", "CIE", "lagus", "lagun", "hrordinal", "nonhrordinal")
+if (original) df <- df[, !(colnames(df) %in% non_original)]
 
 lrm.vars <- c("disap", "kill", "polpris", "tort", "amnesty")
 lrm.labs <- c("Disappearances", "Killings", "Political Imprisonment", "Torture", "Political Terror Scale")
@@ -42,8 +43,8 @@ ivar.labels <- c("log INGOs", "Polity", "Executive Compet.", "Executive Open.",
                  "WB/IMF Structural Adj.", "IMF Structural Adj.", "WB Structural Adj.",
                  "British Colony", "Common Law", "PTA w/ HR Clause", "CAT Ratifier",
                  "CCPR Ratifier", "Youth Bulge", "Ter. Revison.", "Rule of Law", "CIM", "CIE",
-                 "US Sanction (lag)", "UN Sanction (lag)", "Any Sanction", "HR Sanctions",
-                 "Non-HR Sanctions", "Multilateral Sanction", "Unilateral Sanction",
-                 "Civil War", "International War", "AI Press (lag)", "AI Background (lag)",
-                 "Western Media (lag)", "HRO Shaming (lag)")
+                 "US Sanction (lag)", "UN Sanction (lag)", "HR Sanctions",
+                 "Non-HR Sanctions", "Civil War", "International War", "AI Press (lag)",
+                 "AI Background (lag)", "Western Media (lag)", "HRO Shaming (lag)")
+if (original) ivar.labels <- ivar.labels[-c(26:33)]
 ivar.labels.cwar <- ivar.labels[!(ivar.labels %in% "Civil War")]

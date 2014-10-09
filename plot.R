@@ -95,7 +95,7 @@ mi <- as.data.frame(apply(mi, 2, as.numeric))
 mi$type <- "mi"
 plot.df <- as.data.frame(rbind(obs, mi))
 plot.df <- melt(plot.df, id.vars = "type")
-mi.labels <- ivar.labels[-c(20:21,23:24,26,37:38)] ## remove fully observed variable labels
+mi.labels <- ivar.labels[apply(df[, colnames(df) %in% ivars], 2, function(x) any(is.na(x)))]
 plot.df$type <- factor(plot.df$type, levels = unique(plot.df$type), labels = c("Observed", "Imputed"))
 plot.df$variable <- factor(plot.df$variable, levels = unique(plot.df$variable), labels = mi.labels)
 p <- ggplot(data = na.omit(plot.df), aes(x = value))
@@ -107,7 +107,7 @@ p <- p + theme(legend.title = element_blank())
 ggsave("figures/mi.png", plot = p, width = 10, height = 10)
 
 plot.df <- df[, !colnames(df) %in% c("ccode", "year", "gdppc", "pop", "latent_sd", depvars)]
-colnames(plot.df) <- c(ivar.labels)
+colnames(plot.df) <- ivar.labels
 plot.df <- melt(hetcor(plot.df, use = "pairwise.complete.obs")$correlations)
 plot.df <- plot.df[order(plot.df$value), ]
 plot.df$Var1 <- reorder(plot.df$Var1, plot.df$value)

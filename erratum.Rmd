@@ -1,0 +1,66 @@
+# Data Comparison
+
+load the new and old (as of final submission) replication data file
+
+```{r, load_summary}
+df <- read.csv("./data/rep.csv")
+df_old <- read.csv("./data/rep_old.csv")
+
+nrow(df)
+nrow(df_old)
+
+summary(df$year)
+summary(df_old$year)
+```
+
+We gained 189 observations in the newer version of the data. Below are the 
+
+```{r, missing_countries}
+library(countrycode)
+
+old_missing_ccode <- unique(df$ccode[!(df$ccode %in% df_old$ccode)])
+old_missing_ccode
+countrycode(old_missing_ccode, "cown", "country.name", TRUE)
+
+
+```
+
+The count of observations by year for both new and old data.
+
+```{r, missing_year}
+table(df$year)
+table(df_old$year)
+```
+
+Below are the observations that are in the new data but not in the old.
+
+```{r, missing_rows}
+library(dplyr, quiet = TRUE)
+
+diff_old_new <- anti_join(df, df_old, by = c("ccode", "year"))
+unique(countrycode(diff_old_new$ccode, "cown", "country.name", TRUE))
+head(diff_old_new)
+```
+
+I suspect that this is the result of the first `dataframe` that I used for the sequential merge, which was `paradox_rep.csv`
+
+```{r, paradox_check}
+paradox <- read.delim("./data/paradox_rep.tab")
+paradox <- paradox[paradox$year >= 1981, ]
+paradox$country[paradox$country == "United Arab Emirat"] <- "United Arab Emirates"
+paradox$ccode <- countrycode(paradox$country, "country.name", "cown")
+names(paradox) <- tolower(names(paradox))
+paradox <- paradox[, -1]
+
+nrow(paradox)
+summary(paradox$year)
+
+diff_new_paradox <- anti_join(df, paradox, by = c("ccode", "year"))
+head(diff_new_paradox)
+unique(countrycode(diff_new_paradox$ccode, "cown", "country.name", TRUE))
+
+compare <- anti_join(diff_new_paradox, diff_old_new, by = c("ccode", "year"))
+head(compare)
+unique(countrycode(compare$ccode, "cown", "country.name"))
+```
+Looks like almost all of the difference is due to the mistake of merging from `paradox`. That was a dumb move on my part. The remaining 8 observations are all due to a name mismatch.
