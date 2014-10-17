@@ -4,7 +4,7 @@ library(foreach)
 library(iterators)
 library(doParallel)
 library(parallel)
-registerDoParallel(makeCluster(detectCores()))
+registerDoParallel(makeCluster(CORES))
 
 CHECK <- FALSE ## check stability over tuning parameters for appendix
 
