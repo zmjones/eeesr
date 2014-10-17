@@ -1,145 +1,222 @@
 options(stringsAsFactors = FALSE)
-pkgs <- c("plyr", "dplyr", "countrycode", "foreign", "stringr", "lubridate")
+pkgs <- c("plyr", "dplyr", "countrycode", "foreign", "stringr", "lubridate", "assertthat")
 invisible(lapply(pkgs, library, character.only = TRUE, quietly = TRUE))
 
-## read source data
-cat <- read.csv("./data/cat.csv", check.names = FALSE, na.string = "")
-cat <- expandPanel(expandColumns(cat), syear = "1981", eyear = "1999")
-cat$cat_ratify <- ifelse(cat$ratification == 1 | cat$accession == 1 | cat$succession == 1, 1, 0)
-cat$ccode <- countrycode(cat$participant, "country.name", "cown")
-cat <- cat[, c(8,2,7)]
+expand_years <- function(df) {
+    year <- apply(df, 1, function(x) seq(x[2], x[3]))
+    unit <- vector("list", nrow(df))
+    for (i in 1:nrow(df))
+        unit[[i]] <- cbind(df[rep(i, length(year[[i]])), ], year[[i]])
+    df <- do.call("rbind", unit)
+    colnames(df)[grepl("year", colnames(df))] <- "year"
+    row.names(df) <- NULL
+    df[, -c(2,3)]
+}
 
-cpr <- read.csv("./data/cpr.csv", check.names = FALSE, na.string = "")
-cpr <- expandPanel(expandColumns(cpr), syear = "1981", eyear = "1999")
+dupes <- function(df) df[which(duplicated(df[, c("ccode", "year")]) |
+                                   duplicated(df[, c("ccode", "year")], fromLast = TRUE)), ]
+
+df <- read.csv("./data/cow.csv")[, c(2,4,7)]
+df <- expand_years(df)
+df <- df[df$year >= 1981 & df$year <= 1999, ]
+assert_that(!anyDuplicated(df))
+
+## read source data
+## cat <- read.csv("./data/cat.csv", check.names = FALSE, na.string = "")
+## cat <- expandPanel(expandColumns(cat), syear = "1981", eyear = "1999")
+## cat$cat_ratify <- ifelse(cat$ratification == 1 | cat$accession == 1 | cat$succession == 1, 1, 0)
+## write.csv(cat, "./data/cat_expanded.csv", row.names = FALSE)
+cat <- read.csv("./data/cat_expanded.csv")
+cat <- cat[!(cat$participant %in% c("Serbia", "State of Palestine")), ]
+cat$ccode <- countrycode(cat$participant, "country.name", "cown", TRUE)
+cat <- cat[!is.na(cat$ccode), c(8,2,7)]
+assert_that(!anyDuplicated(cat[, c("ccode", "year")]))
+miss <- anti_join(cat, df, by = c("ccode", "year"))[, c("ccode", "year")]
+
+## cpr <- read.csv("./data/cpr.csv", check.names = FALSE, na.string = "")
+## cpr <- expandPanel(expandColumns(cpr), syear = "1981", eyear = "1999")
+## write.csv(cpr, "./data/cpr_expanded.csv", row.names = FALSE)
+cpr <- read.csv("./data/cpr_expanded.csv")
+cpr <- cpr[!(cpr$participant %in% c("Serbia", "State of Palestine")), ]
 cpr$cpr_ratify <- ifelse(cpr$ratification == 1 | cpr$accession == 1 | cpr$succession == 1, 1, 0)
-cpr$ccode <- countrycode(cpr$participant, "country.name", "cown")
-cpr <- cpr[, c(8,2,7)]
+cpr$ccode <- countrycode(cpr$participant, "country.name", "cown", TRUE)
+cpr$ccode[cpr$participant == "Democratic People's Republic of Korea"] <- 731
+cpr$ccode[cpr$participant == "Republic of Korea"] <- 732
+cpr <- cpr[, c(8,1:2,7)]
+assert_that(!anyDuplicated(cpr[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(cpr, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 paradox <- read.delim("./data/paradox_rep.tab")
 paradox <- paradox[paradox$year >= 1981, ]
 paradox$country[paradox$country == "United Arab Emirat"] <- "United Arab Emirates"
-paradox$ccode <- countrycode(paradox$country, "country.name", "cown") ## goodbye dutch antilles!
+paradox <- paradox[paradox$country != "Slovak Republic", ] ## not independent and matches with slovakia
+paradox$ccode <- countrycode(paradox$country, "country.name", "cown", TRUE)
 names(paradox) <- tolower(names(paradox))
-paradox <- paradox[, -1]
-paradox <- paradox[, c(3,1,2)]
+paradox$ccode[paradox$country == "Germany East"] <- 265
+paradox$ccode[paradox$country == "Yemen, Rep."] <- 678
+paradox$ccode[paradox$country == "Yemen South"] <- 680
+paradox <- paradox[!is.na(paradox$ccode), 2:4]
+assert_that(!anyDuplicated(paradox[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(paradox, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 polity <- read.csv("./data/polity.csv", na.strings = c("-88", "-77", "-66", "0"))[, c(2,5,11,14:16,18)]
 polity <- polity[polity$year >= 1981 & polity$year <= 1999, ]
+assert_that(!anyDuplicated(polity[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(polity, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 ciri <- read.csv("./data/ciri_hr.csv", na.strings = c("-999", "-77", "-66"))
 names(ciri) <- tolower(names(ciri))
-ciri <- ciri[ciri$year <= 1999, ]
+ciri <- unique(ciri[ciri$year <= 1999 & !is.na(ciri$cow), ])
 names(ciri)[2] <- "ccode"
+ciri <- ciri[!apply(ciri, 1, function(x) all(is.na(x[3:8]))), ] ## some duplicates with all missingness
+assert_that(!anyDuplicated(ciri[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(ciri, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 pts <- read.csv("./data/pts.csv")
-pts <- pts[pts$Year <= 1999 & pts$Year >= 1981, c(3,5:6)]
+pts <- pts[pts$Year <= 1999 & pts$Year >= 1981 & !is.na(pts$COWnumeric), c(3,5:6)]
+## unique(pts$Country[is.na(pts$COWnumeric)])
 names(pts) <- tolower(names(pts))
 names(pts)[1] <- "ccode"
+assert_that(!anyDuplicated(pts[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(pts, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 polcon <- read.csv("./data/polcon.csv")[ ,c(2,7,13)]
 names(polcon) <- tolower(names(polcon))
 polcon <- polcon[polcon$year >= 1981 & polcon$year <= 1999, ]
+assert_that(!anyDuplicated(polcon[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(polcon, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 exgdp <- read.table("./data/exgdp.dat", sep = " ", header = TRUE)[, -c(2,5,7)]
 names(exgdp)[1] <- "ccode"
 exgdp <- exgdp[exgdp$year >= 1981 & exgdp$year <= 1999, ]
+assert_that(!anyDuplicated(exgdp[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(exgdp, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
-acd <- read.csv("./data/acd.csv")[, c(21,10,13,11:12)]
-names(acd) <- c("ccode", "year", "type", "int", "cumint")
+acd <- read.csv("./data/acd.csv")[, c(3,21,10,13,11:12)]
+names(acd) <- c("cname", "ccode", "year", "type", "int", "cumint")
 acd <- acd[acd$year >= 1981 & acd$year <= 1999, ]
 acd$ccode <- as.integer(acd$ccode)
+acd <- na.omit(unique(acd))
+write.csv(acd[duplicated(acd[, c("ccode", "year")]), ], "./data/acd_dropped.csv", row.names = FALSE)
+acd <- acd[!duplicated(acd[, c("ccode", "year")]), ] ## selects the first observation if there are multiple
+assert_that(!anyDuplicated(acd[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(acd, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 oil <- read.dta("./data/oil_hr.dta")[, c(1,5,129)]
 names(oil) <- tolower(names(oil))
-oil <- oil[oil$year >= 1981 & oil$year <= 1999, ]
+oil <- oil[oil$year >= 1981 & oil$year <= 1999 & !is.na(oil$ccode), ]
 names(oil)[3] <- "rentspc"
+assert_that(!anyDuplicated(oil[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(oil, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 dpi <- read.dta("./data/dpi.dta")[, c(1,3,9,15)]
-dpi$countryname[dpi$countryname == "UAE"] <- "United Arab Emirates"
-dpi$countryname[dpi$countryname == "Cent. Af. Rep."] <- "Central African Republic"
-dpi$countryname[dpi$countryname == "PRC"] <- "People's Republic of China"
-dpi$countryname[dpi$countryname == "GDR"] <- "German Democratic Republic"
-dpi$countryname[dpi$countryname == "Dom. Rep."] <- "Dominican Republic"
-dpi$countryname[dpi$countryname == "ROK"] <- "Republic of Korea"
-dpi$countryname[dpi$countryname == "P. N. Guinea"] <- "Papua New Guinea"
-dpi$countryname[dpi$countryname == "PRK"] <- "People's Republic of Korea"
-dpi$countryname[dpi$countryname == "S. Africa"] <- "South Africa"
-dpi$ccode <- countrycode(dpi$countryname, "country.name", "cown")
-dpi <- dpi[dpi$year >= 1981 & dpi$year <= 1999, -1]
-dpi[is.na(dpi$military), ] <- 0 
+dpi <- dpi[!(dpi$countryname %in% c("Turk Cyprus")), ]
+dpi <- dpi[dpi$year >= 1981 & dpi$year <= 1999, ]
+dpi$ccode <- countrycode(dpi$countryname, "country.name", "cown", TRUE)
+dpi$ccode[dpi$countryname == "UAE"] <- 696
+dpi$ccode[dpi$countryname == "GDR"] <- 265
+dpi$ccode[dpi$countryname == "PRK"] <- 731
+dpi$ccode[dpi$countryname == "ROK"] <- 732
+dpi$military[is.na(dpi$military)] <- 0
+assert_that(!anyDuplicated(dpi[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(dpi, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 hill_isq <- read.dta("./data/hill_isq_rep.dta")[, c(3,2,10:11,17)]
 names(hill_isq)[1] <- "ccode"
 hill_isq <- hill_isq[hill_isq$year >= 1981 & hill_isq$year <= 1999, ]
+assert_that(!anyDuplicated(hill_isq[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(hill_isq, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 civ_libs <- read.csv("./data/civ_libs_ick.csv", na.strings = ".")[, c(2:3,12:13)]
 names(civ_libs) <- tolower(names(civ_libs))
 names(civ_libs)[2:4] <- c("ccode", "public_trial", "fair_trial")
 civ_libs <- civ_libs[civ_libs$year >= 1981 & civ_libs$year <= 1999, ]
+assert_that(!anyDuplicated(civ_libs[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(civ_libs, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 soe_jud <- read.csv("./data/soe_jud_ick.csv", na.strings = ".")[, c(2:3,6,14)]
 names(soe_jud) <- tolower(names(soe_jud))
 names(soe_jud)[2:4] <- c("ccode", "final_decision", "legislative_ck")
 soe_jud <- soe_jud[soe_jud$year >= 1981 & soe_jud$year <= 1999, ]
+assert_that(!anyDuplicated(soe_jud[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(soe_jud, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 a_cbook <- read.csv("./data/a_cbook.csv", row.names = 1)[, c(4:5,32,45,53)]
+a_cbook <- unique(a_cbook)
+assert_that(!anyDuplicated(a_cbook[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(a_cbook, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 wb <- read.dta("./data/worldbank.dta")[, c(1:2,8,9)]
 names(wb)[1] <- "ccode"
 wb <- wb[wb$year >= 1981 & wb$year <= 1999, ]
+assert_that(!anyDuplicated(wb[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(wb, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 mitch <- read.dta("./data/mitchell_jpr.dta")[, c(2:3,36,48)]
 names(mitch)[2:3] <- c("ccode", "britcol")
 mitch <- mitch[mitch$year >= 1981 & mitch$year <= 1999, ]
+assert_that(!anyDuplicated(mitch[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(mitch, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 sb <- read.dta("./data/spilker_bohmelt.dta")[, c(1:3)]
 sb <- sb[sb$year >= 1981 & sb$year <= 1999, ]
+assert_that(!anyDuplicated(sb[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(sb, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 youth <- read.dta("./data/youth_bulge.dta")[, c(2:3,8)]
 youth <- youth[youth$year >= 1981 & youth$year <= 1999, ]
 names(youth)[1] <- "ccode"
+assert_that(!anyDuplicated(youth[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(youth, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 mdavis <- read.dta("./data/murdie_davis.dta")[, c(1,2,16)]
 mdavis <- mdavis[mdavis$year >= 1981 & mdavis$year <= 1999, ]
 names(mdavis)[2:3] <- c("ccode", "hro_shaming")
+assert_that(!anyDuplicated(mdavis[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(mdavis, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 latent <- read.csv("./data/farriss_latent.csv")[, c(1,3,18:19)]
 names(latent) <- c("year", "ccode", "latent", "latent_sd")
 latent <- latent[latent$year >= 1981 & latent$year <= 1999, ]
+assert_that(!anyDuplicated(latent[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(latent, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 sanctions <- read.delim("./data/sanctionsrepdata.tab")[, c(2:3,6:7)]
 names(sanctions)[2] <- "ccode"
 sanctions <- sanctions[sanctions$year >= 1981 & sanctions$year <= 1999, ]
+assert_that(!anyDuplicated(sanctions[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(sanctions, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 cie <- read.dta("./data/CINE 2.0.dta")[, c(1:2,16)]
 cie <- cie[cie$year >= 1981 & cie$year <= 1999, ]
+assert_that(!anyDuplicated(cie[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(cie, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 cim <- read.dta("./data/cim.dta")
 names(cim)[1] <- "ccode"
 cim <- cim[cim$year >= 1981 & cim$year <= 1999, ]
+assert_that(!anyDuplicated(cim[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(cim, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 rol <- read.dta("./data/icrg.dta")
 names(rol)[1] <- "ccode"
 rol <- rol[rol$year >= 1981 & rol$year <= 1999, ]
+assert_that(!anyDuplicated(rol[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(rol, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 tr <- read.dta("./data/Wright2014JPR_replication.dta")[, c(2:3,13)]
 tr <- tr[tr$year >= 1981 & tr$year <= 1999, ]
+assert_that(!anyDuplicated(tr[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(tr, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
 pk <- read.dta("./data/Sanctions_HumanrightsJPR - DPeksen.dta")[, c(1,4,20,21)]
 pk <- pk[pk$year >= 1981 & pk$year <= 1999, ]
+assert_that(!anyDuplicated(pk[, c("ccode", "year")]))
+miss <- rbind(miss, anti_join(pk, df, by = c("ccode", "year"))[, c("ccode", "year")])
 
-df <- read.delim("./data/GW.txt")[, -c(2:3)]
-df$start <- year(dmy(df$start.date))
-df$end <- year(dmy(df$end.date))
-
-df <- apply(df[, -c(2:3)], 1, function(x) {
-    year <- seq(x[2], x[3])
-    ccode <- rep(x[1], length(years))
-    cbind(ccode, year)
-})
-df <- as.data.frame(do.call("rbind", df))
-row.names(df) <- NULL
-df <- df[df$year >= 1981 & df$year <= 1999, ]
+miss <- unique(miss)
+miss$cname <- countrycode(miss$ccode, "cown", "country.name", TRUE)
+write.csv(miss, "data/not_matched.csv", row.names = FALSE)
 
 ## merge source data together
 df <- df %>%
@@ -183,7 +260,7 @@ df$iwar <- ifelse(df$type == 2 & df$cumint == 1, 1, 0)
 df$execrlc[df$execrlc == -999] <- NA
 df$cim <- df$cim * 100
 
-df <- df[!duplicated(df), ] ## don't know where these 205 come from
+assert_that(!anyDuplicated(df))
 
 ## lag some of the variables by one year
 last_year <- df %>%
@@ -205,4 +282,5 @@ df <- df %>% left_join(last_year)
 ## drop unused variables
 drop <- c("j", "type", "int", "cumint", "ainr", "aibr", "avmdia", "hro_shaming")
 df <- df[, !(colnames(df) %in% drop)]
+
 write.csv(df, "./data/rep.csv", row.names = FALSE)
