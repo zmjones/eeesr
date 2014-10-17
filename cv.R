@@ -6,7 +6,7 @@ library(doParallel)
 library(parallel)
 library(rms)
 library(plyr)
-registerDoParallel(makeCluster(detectCores()))
+registerDoParallel(makeCluster(CORES))
 options(showprogress = FALSE)
 
 cv.lrm <- CleanCV(CallCV(lrm.vars, specs, "lrm"),
