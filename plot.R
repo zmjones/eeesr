@@ -95,7 +95,10 @@ mi <- as.data.frame(apply(mi, 2, as.numeric))
 mi$type <- "mi"
 plot.df <- as.data.frame(rbind(obs, mi))
 plot.df <- melt(plot.df, id.vars = "type")
-mi.labels <- ivar.labels[apply(df[, colnames(df) %in% ivars], 2, function(x) any(is.na(x)))]
+ivar.lookup <- data.frame("ivar" = ivars, "labels" = ivar.labels)
+mi.labels <- ivar.lookup[match(mi.vars, ivar.lookup$ivar), "labels"]
+mi.labels[is.na(mi.labels)] <- c("log Population", "log GDP per Cap.")
+## mi.labels <- ivar.labels[apply(df[, colnames(df) %in% ivars], 2, function(x) any(is.na(x)))]
 plot.df$type <- factor(plot.df$type, levels = unique(plot.df$type), labels = c("Observed", "Imputed"))
 plot.df$variable <- factor(plot.df$variable, levels = unique(plot.df$variable), labels = mi.labels)
 p <- ggplot(data = na.omit(plot.df), aes(x = value))

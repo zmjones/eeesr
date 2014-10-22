@@ -1,11 +1,11 @@
-CORES <- 24
+CORES <- 32
 CV_FOLD <- 10
 CV_ITER <- 1000
 MI_ITER <- 5
 B_ITER <- 100
 PLOT_BORDER <- .1
 PANEL_BORDER <- .25
-original <- FALSE
+original <- TRUE
 
 df <- read.csv("./data/rep.csv")
 df$gdppc <- log(df$gdppc)
